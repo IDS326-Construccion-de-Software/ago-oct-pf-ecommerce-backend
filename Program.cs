@@ -13,6 +13,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+// app.UseHttpsRedirection(); PRUEBA
 
 var summaries = new[]
 {
