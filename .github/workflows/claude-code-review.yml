@@ -1,4 +1,5 @@
-name: Claude code Review
+name: Claude Code Review
+
 on:
  pull_request:
   type: [opened, synchronize] 
