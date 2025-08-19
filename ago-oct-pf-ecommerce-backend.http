@@ -1,0 +1,6 @@
+@ago_oct_pf_ecommerce_backend_HostAddress = http://localhost:5095
+
+GET {{ago_oct_pf_ecommerce_backend_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
