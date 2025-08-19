@@ -3,6 +3,7 @@ name: Claude Code Review
 on:
   pull_request:
     types: [opened, synchronize]
+    branches: [main, qa]
 
 jobs:
   claude-review:
@@ -26,8 +27,9 @@ jobs:
         id: claude-review
         uses: anthropics/claude-code-action@main
         with:
+          max_turns: 10
           direct_prompt: |
-            Please review this PR. Look at the changes and provide thoughtful feedback on:
+            Please review this PR efficiently. Look at the changes, provide thoughtful feedback and Focus on the most important issues on:
             - Code quality and best practices
             - Potential bugs or issues
             - Suggestions for improvements
