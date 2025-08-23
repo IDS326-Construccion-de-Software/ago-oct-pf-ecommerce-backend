@@ -19,12 +19,14 @@ jobs:
       - name: Set up docker
         uses: docker/setup-buildx-action@v3
 
-      - name: Run horusec
-        id: run_horusec
-        uses: fike/horusec-action@v0.1
-        with:
-          arguments: -p="./" -i="**/bin/**,**/obj/**,**/packages/**,**/TestResults/**" -e="true" -o="json" -O="./horusec-report.json" --disable-docker="true"
+      - name: Install horusec
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/ZupIT/horusec/main/deployments/scripts/install.sh | bash -s latest
       
+      - name: Run horusec scan
+        run: |
+          horusec start -p="./" -i="**/bin/**,**/obj/**,**/packages/**,**/TestResults/**" -e="true" -o="json" -O="./horusec-report.json" --disable-docker="true"
+
       - name: Upload scan results
         uses: actions/upload-artifact@v4
         if: always() # Run even when the test fails due to detected vulnerabilities.
