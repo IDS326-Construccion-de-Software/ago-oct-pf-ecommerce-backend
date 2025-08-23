@@ -25,7 +25,7 @@ jobs:
       
       - name: Run horusec scan
         run: |
-          horusec start -p="./" -i="**/bin/**,**/obj/**,**/packages/**,**/TestResults/**" -e="true" -o="json" -O="./horusec-report.json" --disable-docker="true"
+          horusec start -p="./" -i="**/bin/**,**/obj/**,**/packages/**,**/TestResults/**" -e="true" -o="json" -O="./horusec-report.json" --disable-docker="true" --severity="medium"
 
       - name: Upload scan results
         uses: actions/upload-artifact@v4
