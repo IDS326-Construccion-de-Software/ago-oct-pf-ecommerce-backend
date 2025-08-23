@@ -6,7 +6,7 @@ on:
     branches: [main,dev,qa]
 
 jobs:
-  horusec-secutiry-scan:
+  horusec-security-scan:
     name: horusec Security Scan
     runs-on: ubuntu-latest
     steps:
@@ -17,8 +17,6 @@ jobs:
 
       - name: Set up docker
         uses: docker/setup-buildx-action@v3
-        run: |
-          echo "Setting up docker"
 
       - name: Install horusec
         run: |
