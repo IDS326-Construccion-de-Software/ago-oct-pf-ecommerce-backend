@@ -1,26 +1,15 @@
+# From .NET Core 3.0 you can use the command:
+#   dotnet new gitignore
+# to generate a customizable .gitignore file
+
 *.swp
-*.*~
+*.swo
+*~
 project.lock.json
 .DS_Store
-*.pyc
 
 # Visual Studio Code
-.vscode
-
-# Environment-specific files (IMPORTANT FOR SECURITY)
-appsettings.local.json
-appsettings.Development.json
-appsettings.Production.json
-.env
-secrets.json
-*.pfx
-*.key
-
-# NuGet y paquetes
-*.nupkg
-**/[Pp]ackages/*
-*.nuget.props
-*.nuget.targets
+.vscode/
 
 # User-specific files
 *.suo
@@ -29,19 +18,38 @@ secrets.json
 *.sln.docstates
 
 # Build results
-[Dd]ebug/
-[Dd]ebugPublic/
-[Rr]elease/
-[Rr]eleases/
-x64/
-x86/
-build/
-bld/
 [Bb]in/
 [Oo]bj/
-msbuild.log
-msbuild.err
-msbuild.wrn
+[Ll]og/
+[Dd]ebug*/
+[Rr]elease*/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]uild[Ll]og.*
 
-# Visual Studio 2015
+# Visual Studio 2015+
 .vs/
+
+# Rider
+.idea/
+*.sln.iml
+
+# NuGet
+*.nupkg
+*.snupkg
+artifacts/
+
+# Test results
+TestResult*/
+*.trx
+*.coverage
+*.coveragexml
+*.opencover.xml
+
+# Publish
+*.publishsettings
+*.pubxml
+*.pubxml.user
