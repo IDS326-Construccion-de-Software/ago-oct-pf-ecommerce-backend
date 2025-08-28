@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Revenge.Data", "Revenge.Dat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Revenge.Infrestructure", "Revenge.Infrestructure\Revenge.Infrestructure.csproj", "{F9004D3B-A688-436A-91EB-435A154A8EF4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Revenge.API", "ago-oct-pf-ecommerce-backend\Revenge.API.csproj", "{B0C59D37-C7DF-440B-4761-D4A10E981C8A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Revenge.API", "Revenge.APIoct-pf-ecommerce-backend\Revenge.API.csproj", "{B0C59D37-C7DF-440B-4761-D4A10E981C8A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
