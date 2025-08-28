@@ -1,12 +1,12 @@
 # E-commerce Backend
 
-A modern e-commerce backend API built with ASP.NET Core 9.0, designed for scalability and performance.
+A modern e-commerce backend solution built with .NET 9.0, following layered architecture best practices. It includes API, data access, and infrastructure services.
 
 ## 🚀 Features
 
 - **RESTful API**: Well-structured REST endpoints for e-commerce operations
 - **OpenAPI/Swagger**: Comprehensive API documentation and testing interface
-- **Modern Architecture**: Built with .NET 9.0 and ASP.NET Core
+- **Modern Architecture**: Clean separation of concerns with layered projects
 - **Development Ready**: Configured for both development and production environments
 
 ## 🛠️ Tech Stack
@@ -18,14 +18,13 @@ A modern e-commerce backend API built with ASP.NET Core 9.0, designed for scalab
 
 ## 📋 Prerequisites
 
-Before running this application, make sure you have the following installed:
-
+Before running this solution, make sure you have the following installed:
 - [.NET 9.0 SDK](https://dotnet.microsoft.com/download/dotnet/9.0) or later
 - A code editor like [Visual Studio](https://visualstudio.microsoft.com/) or [VS Code](https://code.visualstudio.com/)
 
 ## 🚀 Getting Started
 
-### Installation
+### Installation and Setup
 
 1. **Clone the repository**
    ```bash
@@ -35,40 +34,25 @@ Before running this application, make sure you have the following installed:
 
 2. **Restore dependencies**
    ```bash
-   dotnet restore
+   dotnet restore revenge-backend.sln
    ```
 
-3. **Run the application**
+3. **Run the API**
    ```bash
+   cd Revenge.API
    dotnet run
    ```
 
-The application will start and be available at:
+The application will be available at:
 - **HTTP**: `http://localhost:5000`
 - **HTTPS**: `https://localhost:5001`
 
-### Development Mode
-
 When running in development mode, the OpenAPI/Swagger interface will be available at:
-- `https://localhost:5001/openapi`
+- `https://localhost:5001/swagger`
 
 ## 📖 API Documentation
 
-The API includes a sample weather forecast endpoint:
-
-- **GET** `/weatherforecast` - Returns a 5-day weather forecast with random data
-
-### Example Response
-```json
-[
-  {
-    "date": "2024-08-25",
-    "temperatureC": 25,
-    "temperatureF": 77,
-    "summary": "Warm"
-  }
-]
-```
+Interactive API documentation is available via Swagger in development. The main endpoints are focused on e-commerce operations (products, users, orders, etc).
 
 ## ⚙️ Configuration
 
@@ -86,35 +70,34 @@ You can override configuration values using environment variables following the 
 ## 🏗️ Project Structure
 
 ```
-ago-oct-pf-ecommerce-backend/
-├── Program.cs                          # Application entry point
-├── ago-oct-pf-ecommerce-backend.csproj # Project configuration
-├── appsettings.json                    # Application configuration
-├── appsettings.Development.json        # Development configuration
-├── Properties/
-│   └── launchSettings.json            # Launch profiles
-├── LICENSE                            # Apache 2.0 License
-└── README.md                          # This file
+revenge-backend.sln                # Main solution file
+Revenge.API/                       # Main API project
+├── Properties/                    # Launch settings
+├── Controllers/                   # API Controllers
+└── appsettings.json              # Configuration files
+Revenge.Data/                      # Data access layer
+├── Models/                        # Entities and data models
+└── Context/                       # Entity Framework context
+Revenge.Infrastructure/            # Business logic and services
+├── Services/                      # Service implementations
+└── Repositories/                  # Data repositories
 ```
 
 ## 🔧 Development
 
 ### Building the Project
-
 ```bash
-dotnet build
+dotnet build revenge-backend.sln
 ```
 
 ### Running Tests
-
 ```bash
-dotnet test
+dotnet test revenge-backend.sln
 ```
 
 ### Publishing for Production
-
 ```bash
-dotnet publish -c Release -o out
+dotnet publish Revenge.API -c Release -o out
 ```
 
 ## 🤝 Contributing
@@ -131,15 +114,14 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 
 ## 📞 Support
 
-If you encounter any issues or have questions, please:
-
+If you encounter any issues or have questions:
 1. Check the existing [issues](../../issues)
 2. Create a new issue if your problem isn't already reported
 3. Provide detailed information about your environment and the issue
 
 ## 🚦 Status
 
-![Build Status](https://github.com/IDS326-Construccion-de-Software/ago-oct-pf-ecommerce-backend/workflows/CI/badge.svg)
+![Build Status](https://github.com/IDS326-Construccion-de-Software/Revenge.APIoct-pf-ecommerce-backend/workflows/CI/badge.svg)
 
 ---
 
