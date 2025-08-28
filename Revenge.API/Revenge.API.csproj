@@ -4,7 +4,7 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <RootNamespace>ago_oct_pf_ecommerce_backend</RootNamespace>
+    <RootNamespace>Revenge.API_oct_pf_ecommerce_backend</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
