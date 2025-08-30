@@ -5,17 +5,8 @@
         public static void ConfigureConnection(this IServiceCollection services,
             IConfiguration configuration)
         {
-            var connectionString = configuration.GetValue<string>("DbSettings:ConnectionString");
+            var connectionString = configuration.GetValue<string>("DbSettings:DbConnection");
             var databaseName = configuration.GetValue<string>("DbSettings:DatabaseName");
-
-            //DB context
-            /*services.AddDbContext<SinewaveDbContext>(options =>
-            options.UseSqlServer(connectionString));*/
-
-
-
-
-
         }
     }
 }
