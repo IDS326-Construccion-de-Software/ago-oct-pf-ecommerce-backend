@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Revenge.Infrestructure.Entities;
+
 
 namespace Revenge.Data.Context
 {
@@ -12,6 +14,8 @@ namespace Revenge.Data.Context
             : base(options)
         {
         }
-            public virtual DbSet<> Usuarios { get; set; }
-    }
+        //Relacion con usuario (por terminar)
+        public virtual DbSet<User> Users { get; set; }
+
+    }    
 }
