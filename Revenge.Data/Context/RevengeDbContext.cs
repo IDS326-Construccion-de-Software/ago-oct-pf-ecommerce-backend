@@ -8,14 +8,15 @@ using Revenge.Infrestructure.Entities;
 
 namespace Revenge.Data.Context
 {
-    public partial class Context : DbContext
+    public sealed class RevengeDbContext : DbContext
     {
-        public Context(DbContextOptions<Context> options)
+        public RevengeDbContext(DbContextOptions<RevengeDbContext> options)
             : base(options)
         {
+            Users = Set<User>();
         }
         //Relacion con usuario (por terminar)
-        public virtual DbSet<User> Users { get; set; }
+        public DbSet<User> Users { get; }
 
     }    
 }
