@@ -1,13 +1,18 @@
-using ago_oct_pf_ecommerce_backend.Configuration;
+using Microsoft.EntityFrameworkCore;
+using Revenge.Data.Context;
+
+var builder = WebApplication.CreateBuilder(args);
 
 //Configuration
 var configuration = new ConfigurationBuilder()
     .AddJsonFile("appsettings.json", optional: false)
     .Build();
 
-var builder = WebApplication.CreateBuilder(args);
+var connectionString = builder.Configuration.GetConnectionString("DbConnection");
 
-builder.Services.ConfigureConnection(configuration);
+builder.Services.AddDbContext<Context>(options => options.UseNpgsql(connectionString));
+
+//builder.Services.ConfigureConnection(configuration);
 builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
