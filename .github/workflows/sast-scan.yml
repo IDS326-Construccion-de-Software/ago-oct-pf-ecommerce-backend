@@ -28,7 +28,7 @@ jobs:
 
       - name: Install horusec
         run: |
-          echo github.actor
+          echo $GITHUB_ACTOR
           curl -fsSL https://raw.githubusercontent.com/ZupIT/horusec/main/deployments/scripts/install.sh | bash -s latest
       
       - name: Run horusec scan
