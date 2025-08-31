@@ -7,10 +7,6 @@ namespace Revenge.Data.Context
 {
     public sealed class RevengeDbContext : DbContext
     {
-        public RevengeDbContext()
-        {
-        }
-
         public RevengeDbContext(DbContextOptions<RevengeDbContext> options)
             : base(options)
         {
