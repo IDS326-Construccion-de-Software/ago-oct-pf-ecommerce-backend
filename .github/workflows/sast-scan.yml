@@ -10,7 +10,7 @@ jobs:
   horusec-security-scan:
     name: horusec Security Scan
     runs-on: ubuntu-latest
-    if: github.actor == "Albert2707" || github.actor == "Uriel020" || github.actor == "jaime-hndz" 
+    if: github.actor == 'Albert2707' || github.actor == 'Uriel020' || github.actor == 'jaime-hndz' 
     permissions:
       contents: read
       actions: write      
