@@ -9,7 +9,7 @@ jobs:
   claude-review:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    if: github.event.pull_request.draft == false
+    if: github.event.pull_request.draft == false && (github.actor == 'Albert2707' || github.actor == 'Uriel020' || github.actor == 'jaime-hndz')
     
     permissions:
       contents: read
