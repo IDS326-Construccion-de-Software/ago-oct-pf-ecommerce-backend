@@ -1,24 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 
-namespace Revenge.Infrestructure.Entities
+namespace Revenge.Infrestructure.Entities;
+
+public partial class User
 {
-    public class User
-    {
-        public int id { get; set; }
-        public string name { get; set; } = null!;
-        public string cedula { get; set; } = null!;
-        public string email { get; set; } = null!;
-        public string password { get; set; } = null!;
-        public PhoneAttribute? PhoneAttribute { get; set; }
-        public DateOnly? birthDate { get; set; }
-        public JsonObject? directions { get; set; }
-        public TimestampAttribute? createdAt { get; set; }
-        public TimestampAttribute? updatedAt { get; set; }
-    }
+    public Guid Id { get; set; }
+
+    public string Name { get; set; } = null!;
+
+    public string Email { get; set; } = null!;
+
+    public string Password { get; set; } = null!;
+
+    public string? Cellphone { get; set; }
+
+    public DateOnly? Birthdate { get; set; }
+
+    public string? Directions { get; set; }
+
+    public DateTime? Createdat { get; set; }
+
+    public DateTime? Updatedat { get; set; }
+
+    public int? Numidentification { get; set; }
+
+    public virtual ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
+
+    public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
+
+    public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
+
+    public virtual ICollection<Shoppingcart> Shoppingcarts { get; set; } = new List<Shoppingcart>();
 }
