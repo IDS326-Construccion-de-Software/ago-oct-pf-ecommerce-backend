@@ -5,7 +5,7 @@ using Revenge.Infrestructure.Entities;
 
 namespace Revenge.Data.Context
 {
-    public class RevengeDbContext : DbContext
+    public sealed class RevengeDbContext : DbContext
     {
         public RevengeDbContext()
         {
@@ -16,18 +16,18 @@ namespace Revenge.Data.Context
         {
         }
 
-        public virtual DbSet<Cartitem> Cartitems { get; set; }
-        public virtual DbSet<Category> Categories { get; set; }
-        public virtual DbSet<Invoice> Invoices { get; set; }
-        public virtual DbSet<Invoiceitem> Invoiceitems { get; set; }
-        public virtual DbSet<Order> Orders { get; set; }
-        public virtual DbSet<Orderitem> Orderitems { get; set; }
-        public virtual DbSet<Payment> Payments { get; set; }
-        public virtual DbSet<Paymentmethod> Paymentmethods { get; set; }
-        public virtual DbSet<Product> Products { get; set; }
-        public virtual DbSet<Productimage> Productimages { get; set; }
-        public virtual DbSet<Shoppingcart> Shoppingcarts { get; set; }
-        public virtual DbSet<User> Users { get; set; }
+        public DbSet<Cartitem> Cartitems { get; set; }
+        public DbSet<Category> Categories { get; set; }
+        public DbSet<Invoice> Invoices { get; set; }
+        public DbSet<Invoiceitem> Invoiceitems { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<Orderitem> Orderitems { get; set; }
+        public DbSet<Payment> Payments { get; set; }
+        public DbSet<Paymentmethod> Paymentmethods { get; set; }
+        public DbSet<Product> Products { get; set; }
+        public DbSet<Productimage> Productimages { get; set; }
+        public DbSet<Shoppingcart> Shoppingcarts { get; set; }
+        public DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
