@@ -10,7 +10,7 @@ using Revenge.Infrestructure.Entities;
 
 namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
 {
-    [Route("api/[product]")]
+    [Route("api/product")]
     [ApiController]
     public class ProductsController : ControllerBase
     {
