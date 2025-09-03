@@ -5,23 +5,23 @@ namespace Revenge.Infrestructure.Entities;
 
 public partial class Invoiceitem
 {
-    public Guid Id { get; set; }
+    public Guid id { get; set; }
 
-    public Guid Invoiceid { get; set; }
+    public Guid invoiceId { get; set; }
 
-    public Guid Productid { get; set; }
+    public Guid productId { get; set; }
 
-    public string? Description { get; set; }
+    public string? description { get; set; }
 
-    public decimal Unitprice { get; set; }
+    public decimal unitPrice { get; set; }
 
-    public int Quantity { get; set; }
+    public int quantity { get; set; }
 
-    public decimal Subtotal { get; set; }
+    public decimal subtotal { get; set; }
 
-    public DateTime? Updatedat { get; set; }
+    public DateTime? updatedAt { get; set; }
 
-    public virtual Invoice Invoice { get; set; } = null!;
+    public virtual Invoice invoice { get; set; } = null!;
 
-    public virtual Product Product { get; set; } = null!;
+    public virtual Product product { get; set; } = null!;
 }
