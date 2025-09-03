@@ -5,31 +5,31 @@ namespace Revenge.Infrestructure.Entities;
 
 public partial class User
 {
-    public Guid Id { get; set; }
+    public Guid id { get; set; }
 
-    public string Name { get; set; } = null!;
+    public string name { get; set; } = null!;
 
-    public string Email { get; set; } = null!;
+    public string email { get; set; } = null!;
 
-    public string Password { get; set; } = null!;
+    public string password { get; set; } = null!;
 
-    public string? Cellphone { get; set; }
+    public string? cellphone { get; set; }
 
-    public DateOnly? Birthdate { get; set; }
+    public DateOnly? birthdate { get; set; }
 
-    public string? Directions { get; set; }
+    public string? directions { get; set; }
 
-    public DateTime? Createdat { get; set; }
+    public DateTime? createdAt { get; set; }
 
-    public DateTime? Updatedat { get; set; }
+    public DateTime? updatedAt { get; set; }
 
-    public int? Numidentification { get; set; }
+    public int? numIdentification { get; set; }
 
-    public virtual ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
+    public virtual ICollection<Invoice> invoices { get; set; } = new List<Invoice>();
 
-    public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
+    public virtual ICollection<Order> orders { get; set; } = new List<Order>();
 
-    public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
+    public virtual ICollection<Payment> payments { get; set; } = new List<Payment>();
 
-    public virtual ICollection<Shoppingcart> Shoppingcarts { get; set; } = new List<Shoppingcart>();
+    public virtual ICollection<Shoppingcart> shoppingCarts { get; set; } = new List<Shoppingcart>();
 }

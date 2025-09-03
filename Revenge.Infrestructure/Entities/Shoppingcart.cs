@@ -5,15 +5,15 @@ namespace Revenge.Infrestructure.Entities;
 
 public partial class Shoppingcart
 {
-    public Guid Id { get; set; }
+    public Guid id { get; set; }
 
-    public Guid Userid { get; set; }
+    public Guid userId { get; set; }
 
-    public DateTime? Createdat { get; set; }
+    public DateTime? createdAt { get; set; }
 
-    public DateTime? Updatedat { get; set; }
+    public DateTime? updatedAt { get; set; }
 
-    public virtual ICollection<Cartitem> Cartitems { get; set; } = new List<Cartitem>();
+    public virtual ICollection<Cartitem> cartItems { get; set; } = new List<Cartitem>();
 
-    public virtual User User { get; set; } = null!;
+    public virtual User user { get; set; } = null!;
 }
