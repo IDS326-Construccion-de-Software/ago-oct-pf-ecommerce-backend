@@ -46,13 +46,13 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutCategory(Guid id, Category category)
         {
-            if (id != category.Id)
+            if (id != category.id)
             {
                 return BadRequest();
             }
 
             _context.Entry(category).State = EntityState.Modified;
-            category.Updatedat = DateTime.UtcNow;
+            category.updatedAt = DateTime.UtcNow;
 
             try
             {
@@ -77,13 +77,13 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
         [HttpPost]
         public async Task<ActionResult<Category>> PostCategory(Category category)
         {
-            category.Id = Guid.NewGuid();
-            category.Createdat = DateTime.UtcNow;
+            category.id = Guid.NewGuid();
+            category.createdAt = DateTime.UtcNow;
 
             _context.Categories.Add(category);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetCategory), new { id = category.Id }, category);
+            return CreatedAtAction(nameof(GetCategory), new { id = category.id }, category);
         }
 
         // DELETE: api/category/{id}
@@ -104,7 +104,7 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
 
         private bool CategoryExists(Guid id)
         {
-            return _context.Categories.Any(e => e.Id == id);
+            return _context.Categories.Any(e => e.id == id);
         }
     }
 }

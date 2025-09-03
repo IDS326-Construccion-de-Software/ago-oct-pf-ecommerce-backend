@@ -47,7 +47,7 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutProduct(Guid id, Product product)
         {
-            if (id != product.Id)
+            if (id != product.id)
             {
                 return BadRequest();
             }
@@ -81,7 +81,7 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetProduct", new { id = product.Id }, product);
+            return CreatedAtAction("GetProduct", new { id = product.id }, product);
         }
 
         // DELETE: api/Products/5
@@ -102,7 +102,7 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
 
         private bool ProductExists(Guid id)
         {
-            return _context.Products.Any(e => e.Id == id);
+            return _context.Products.Any(e => e.id == id);
         }
     }
 }
