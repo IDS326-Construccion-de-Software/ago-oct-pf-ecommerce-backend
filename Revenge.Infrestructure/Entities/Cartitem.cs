@@ -5,19 +5,19 @@ namespace Revenge.Infrestructure.Entities;
 
 public partial class Cartitem
 {
-    public Guid Id { get; set; }
+    public Guid id { get; set; }
 
-    public Guid Cartid { get; set; }
+    public Guid cartId { get; set; }
 
-    public Guid Productid { get; set; }
+    public Guid productId { get; set; }
 
-    public int Quantity { get; set; }
+    public int quantity { get; set; }
 
-    public DateTime? Addedat { get; set; }
+    public DateTime? addedAt { get; set; }
 
-    public DateTime? Updatedat { get; set; }
+    public DateTime? updatedAt { get; set; }
 
-    public virtual Shoppingcart Cart { get; set; } = null!;
+    public virtual Shoppingcart cart { get; set; } = null!;
 
-    public virtual Product Product { get; set; } = null!;
+    public virtual Product product { get; set; } = null!;
 }
