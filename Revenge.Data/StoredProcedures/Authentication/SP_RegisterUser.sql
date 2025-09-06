@@ -47,7 +47,7 @@ BEGIN
             @Cellphone,
             @Birthdate,
             @Directions,
-            @NumIdentification,
+            @NumIdentification, --Esto va ? 
             @CreatedAt,
             @CreatedAt
         )
