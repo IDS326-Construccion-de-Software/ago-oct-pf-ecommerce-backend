@@ -33,10 +33,6 @@ bld/
 # Visual Studio 2015+
 .vs/
 
-# Rider
-.idea/
-*.sln.iml
-
 # NuGet
 *.nupkg
 *.snupkg
@@ -54,5 +50,6 @@ TestResult*/
 *.pubxml
 *.pubxml.user
 
-*.appsettings.json
-*.appsettings.Development.json
+#CSharp 
+appsettings.json
+appsettings.*.json
