@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Revenge.Data.Context;
 using Revenge.Infrestructure.Entities;
 using Revenge.Infrestructure.Repositories;
+using Revenge.Data.Models;
 
 namespace Revenge.Data.Repositories
 {
@@ -19,9 +20,26 @@ namespace Revenge.Data.Repositories
             _context = context;
         }
 
-        public Task<bool> AddUserAsync(User newUser, CancellationToken cancellationToken = default)
+        public async Task<bool> AddUserAsync(User newUser, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.email == newUser.email, cancellationToken);
+
+                if (existingUser != null)
+                {
+                    return false;
+                }
+                _context.Users.Add(newUser);
+
+                var result = await _context.SaveChangesAsync(cancellationToken);
+                return result > 0;
+
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public Task<bool> ChangePasswordAsync(string userId, string currentPassword, string newPassword, CancellationToken cancellationToken = default)
