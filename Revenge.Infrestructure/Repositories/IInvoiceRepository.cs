@@ -1,0 +1,30 @@
+
+using Revenge.Infrestructure.Entities;
+
+namespace Revenge.Infrestructure.Repositories
+{
+  public interface IInvoiceRepository
+  {
+    Task<Invoice[]?> FindInvoicesByUserAsync(
+        Guid userId,
+        CancellationToken cancellationToken = default);
+
+    Task<Invoice?> FindInvoiceByIdAsync(
+      Guid invoiceId,
+      CancellationToken cancellationToken = default);
+
+    Task<bool> AddInvoiceAsync(
+      Invoice newInvoice,
+      CancellationToken cancellationToken = default);
+
+    //Delete is only to development
+
+    Task<bool> SoftDeleteInvoiceAsync(
+      Guid invoiceId,
+      CancellationToken cancellationToken = default);
+
+    Task<bool> DeleteInvoiceAsync(
+      Guid invoiceId,
+      CancellationToken cancellationToken = default);
+  }
+}
