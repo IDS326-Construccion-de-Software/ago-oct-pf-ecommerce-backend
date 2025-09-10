@@ -5,27 +5,25 @@ namespace Revenge.Infrestructure.Entities;
 
 public partial class Invoice
 {
-    public Guid id { get; set; }
+    public Guid Id { get; set; }
 
-    public Guid orderId { get; set; }
+    public Guid Orderid { get; set; }
 
-    public Guid userId { get; set; }
+    public Guid Userid { get; set; }
 
-    public DateTime? issuedAt { get; set; }
+    public DateTime? Issuedat { get; set; }
 
-    public decimal total { get; set; }
+    public decimal Total { get; set; }
 
-    public decimal? tax { get; set; }
+    public decimal? Tax { get; set; }
 
-    public string? notes { get; set; }
+    public string? Url { get; set; }
 
-    public DateTime? updatedAt { get; set; }
+    public DateTime? Updatedat { get; set; }
 
-    public virtual ICollection<Invoiceitem> invoiceItems { get; set; } = new List<Invoiceitem>();
+    public virtual Order Order { get; set; } = null!;
 
-    public virtual Order order { get; set; } = null!;
+    public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
 
-    public virtual ICollection<Payment> payments { get; set; } = new List<Payment>();
-
-    public virtual User user { get; set; } = null!;
+    public virtual User User { get; set; } = null!;
 }

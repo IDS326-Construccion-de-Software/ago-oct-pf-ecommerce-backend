@@ -5,15 +5,15 @@ namespace Revenge.Infrestructure.Entities;
 
 public partial class Category
 {
-    public Guid id { get; set; }
+    public Guid Id { get; set; }
 
-    public string name { get; set; } = null!;
+    public string Name { get; set; } = null!;
 
-    public string? description { get; set; }
+    public string? Description { get; set; }
 
-    public DateTime? createdAt { get; set; }
+    public DateTime? Createdat { get; set; }
 
-    public DateTime? updatedAt { get; set; }
+    public DateTime? Updatedat { get; set; }
 
-    public virtual ICollection<Product> products { get; set; } = new List<Product>();
+    public virtual ICollection<Product> Products { get; set; } = new List<Product>();
 }

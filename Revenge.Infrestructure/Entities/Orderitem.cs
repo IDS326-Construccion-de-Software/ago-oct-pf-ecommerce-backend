@@ -5,21 +5,21 @@ namespace Revenge.Infrestructure.Entities;
 
 public partial class Orderitem
 {
-    public Guid id { get; set; }
+    public Guid Id { get; set; }
 
-    public Guid orderId { get; set; }
+    public Guid Orderid { get; set; }
 
-    public Guid productId { get; set; }
+    public Guid Productid { get; set; }
 
-    public decimal unitPrice { get; set; }
+    public decimal Unitprice { get; set; }
 
-    public int quantity { get; set; }
+    public int Quantity { get; set; }
 
-    public decimal subtotal { get; set; }
+    public decimal Subtotal { get; set; }
 
-    public DateTime? updatedAt { get; set; }
+    public DateTime? Updatedat { get; set; }
 
-    public virtual Order order { get; set; } = null!;
+    public virtual Order Order { get; set; } = null!;
 
-    public virtual Product product { get; set; } = null!;
+    public virtual Product Product { get; set; } = null!;
 }

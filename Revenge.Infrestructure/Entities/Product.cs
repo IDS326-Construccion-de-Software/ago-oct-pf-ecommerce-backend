@@ -5,31 +5,27 @@ namespace Revenge.Infrestructure.Entities;
 
 public partial class Product
 {
-    public Guid id { get; set; }
+    public Guid Id { get; set; }
 
-    public string name { get; set; } = null!;
+    public string Name { get; set; } = null!;
 
-    public string? description { get; set; }
+    public string? Description { get; set; }
 
-    public decimal price { get; set; }
+    public decimal Price { get; set; }
 
-    public Guid categoryId { get; set; }
+    public Guid Categoryid { get; set; }
 
-    public string? brand { get; set; }
+    public string? Brand { get; set; }
 
-    public string? url { get; set; }
+    public string? Url { get; set; }
 
-    public DateTime? createdAt { get; set; }
+    public DateTime? Createdat { get; set; }
 
-    public DateTime? updatedAt { get; set; }
+    public DateTime? Updatedat { get; set; }
 
-    public virtual ICollection<Cartitem> cartItems { get; set; } = new List<Cartitem>();
+    public virtual ICollection<Cartitem> Cartitems { get; set; } = new List<Cartitem>();
 
-    public virtual Category category { get; set; } = null!;
+    public virtual Category Category { get; set; } = null!;
 
-    public virtual ICollection<Invoiceitem> invoiceItems { get; set; } = new List<Invoiceitem>();
-
-    public virtual ICollection<Orderitem> orderItems { get; set; } = new List<Orderitem>();
-
-    public virtual ICollection<Productimage> productImages { get; set; } = new List<Productimage>();
+    public virtual ICollection<Orderitem> Orderitems { get; set; } = new List<Orderitem>();
 }

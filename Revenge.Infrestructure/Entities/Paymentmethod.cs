@@ -5,15 +5,15 @@ namespace Revenge.Infrestructure.Entities;
 
 public partial class Paymentmethod
 {
-    public Guid id { get; set; }
+    public Guid Id { get; set; }
 
-    public string name { get; set; } = null!;
+    public string Name { get; set; } = null!;
 
-    public string? provider { get; set; }
+    public string? Provider { get; set; }
 
-    public string? metadata { get; set; }
+    public string? Metadata { get; set; }
 
-    public DateTime? updatedAt { get; set; }
+    public DateTime? Updatedat { get; set; }
 
-    public virtual ICollection<Payment> payments { get; set; } = new List<Payment>();
+    public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
 }

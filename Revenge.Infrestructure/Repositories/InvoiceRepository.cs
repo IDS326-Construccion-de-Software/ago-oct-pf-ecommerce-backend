@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Revenge.Infrestructure.Repositories
 {
-    public class InvoiceRepositorie
+    public class InvoiceRepository
     {
         
     }
