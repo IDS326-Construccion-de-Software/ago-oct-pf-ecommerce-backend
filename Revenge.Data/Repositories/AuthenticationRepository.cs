@@ -24,7 +24,7 @@ namespace Revenge.Data.Repositories
         {
             try
             {
-                var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.email == newUser.email, cancellationToken);
+                var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == newUser.Email, cancellationToken);
 
                 if (existingUser != null)
                 {

@@ -47,16 +47,16 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
                 //var existingUser = await _authenticationRepository.get;
                 var user = new User
                 {
-                    id = Guid.NewGuid(),
-                    name = registerUserDTO.Name,
-                    email = registerUserDTO.Email,
-                    password = registerUserDTO.Password, //Por hacer: Encriptar
-                    cellphone = registerUserDTO.Cellphone,
-                    birthdate = registerUserDTO.Birthdate,
-                    directions = registerUserDTO.Directions!= null ? System.Text.Json.JsonSerializer.Serialize(registerUserDTO.Directions) : null,
-                    numIdentification = registerUserDTO.NumIdentification,
-                    createdAt = DateTime.UtcNow,
-                    updatedAt = DateTime.UtcNow
+                    Id = Guid.NewGuid(),
+                    Name = registerUserDTO.Name,
+                    Email = registerUserDTO.Email,
+                    Password = registerUserDTO.Password, //Por hacer: Encriptar
+                    Cellphone = registerUserDTO.Cellphone,
+                    Birthdate = registerUserDTO.Birthdate,
+                    Directions = registerUserDTO.Directions!= null ? System.Text.Json.JsonSerializer.Serialize(registerUserDTO.Directions) : null,
+                    NumIdentification = registerUserDTO.NumIdentification,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
 
                 };
                 var result = await _authenticationRepository.AddUserAsync(user, cancellationToken);
@@ -66,8 +66,8 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
 
                 return CreatedAtAction(
                     nameof(Register),
-                    new { id = user.id },
-                    new { message = "Usuario registrado exitosamente", userID = user.id }
+                    new { id = user.Id },
+                    new { message = "Usuario registrado exitosamente", userID = user.Id }
                 );
             }
             catch (Exception)

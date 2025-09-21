@@ -25,8 +25,8 @@ namespace Revenge.Data.Repositories
         public async Task<Product[]?> GetAllAsync(CancellationToken cancellationToken = default)
         {
             return await _context.Products
-                .Include(p => p.category)        // Incluye la relación con categoría
-                .Include(p => p.productImages)   // Incluye imágenes del producto
+                .Include(p => p.Category)        // Incluye la relación con categoría
+                .Include(p => p.Productimages)   // Incluye imágenes del producto
                 .ToArrayAsync(cancellationToken);
         }
 
@@ -36,9 +36,9 @@ namespace Revenge.Data.Repositories
         public async Task<Product?> GetByIdAsync(Guid productId, CancellationToken cancellationToken = default)
         {
             return await _context.Products
-                .Include(p => p.category)
-                .Include(p => p.productImages)
-                .FirstOrDefaultAsync(p => p.id == productId, cancellationToken);
+                .Include(p => p.Category)
+                .Include(p => p.Productimages)
+                .FirstOrDefaultAsync(p => p.Id == productId, cancellationToken);
         }
 
       
@@ -56,10 +56,10 @@ namespace Revenge.Data.Repositories
         
         public async Task<bool> UpdateAsync(Product product, CancellationToken cancellationToken = default)
         {
-            var exists = await _context.Products.AnyAsync(p => p.id == product.id, cancellationToken);
+            var exists = await _context.Products.AnyAsync(p => p.Id == product.Id, cancellationToken);
             if (!exists) return false;
 
-            product.updatedAt = DateTime.UtcNow; // Actualiza la fecha de modificación
+            product.UpdatedAt = DateTime.UtcNow; // Actualiza la fecha de modificación
             _context.Products.Update(product);
             return await _context.SaveChangesAsync(cancellationToken) > 0;
         }
@@ -81,7 +81,7 @@ namespace Revenge.Data.Repositories
        
         public async Task<bool> ExistsAsync(Guid productId, CancellationToken cancellationToken = default)
         {
-            return await _context.Products.AnyAsync(p => p.id == productId, cancellationToken);
+            return await _context.Products.AnyAsync(p => p.Id == productId, cancellationToken);
         }
     }
 }

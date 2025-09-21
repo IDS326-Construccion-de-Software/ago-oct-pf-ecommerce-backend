@@ -5,17 +5,18 @@ namespace Revenge.Infrestructure.Entities;
 
 public partial class Productimage
 {
-    public Guid id { get; set; }
+    /// <summary>
+    /// productId
+    /// </summary>
+    public Guid ProductId { get; set; }
 
-    public Guid productId { get; set; }
+    public Guid Id { get; set; }
 
-    public string url { get; set; } = null!;
+    public string Url { get; set; } = null!;
 
-    public string? altText { get; set; }
+    public bool IsPrimary { get; set; }
 
-    public bool? isPrimary { get; set; }
+    public int Order { get; set; }
 
-    public DateTime? updatedAt { get; set; }
-
-    public virtual Product product { get; set; } = null!;
+    public virtual Product Product { get; set; } = null!;
 }
