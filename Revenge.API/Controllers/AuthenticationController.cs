@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualBasic;
 using Revenge.Infrestructure.Repositories;
+using Revenge.Data.Models;
+using Revenge.Infrestructure.Entities;
 
 namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
 {
@@ -34,6 +36,45 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
                 return false;
             }
         }
+        [HttpPost("register")]
+        public async Task<ActionResult> Register([FromBody] RegisterUserDTO registerUserDTO, CancellationToken cancellationToken)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
+            try
+            {
+                //var existingUser = await _authenticationRepository.get;
+                var user = new User
+                {
+                    Id = Guid.NewGuid(),
+                    Name = registerUserDTO.Name,
+                    Email = registerUserDTO.Email,
+                    Password = registerUserDTO.Password, //Por hacer: Encriptar
+                    Cellphone = registerUserDTO.Cellphone,
+                    Birthdate = registerUserDTO.Birthdate,
+                    Directions = registerUserDTO.Directions!= null ? System.Text.Json.JsonSerializer.Serialize(registerUserDTO.Directions) : null,
+                    NumIdentification = registerUserDTO.NumIdentification,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+
+                };
+                var result = await _authenticationRepository.AddUserAsync(user, cancellationToken);
+
+                if (!result)
+                    return StatusCode(500, "Error al registrar usuario");
+
+                return CreatedAtAction(
+                    nameof(Register),
+                    new { id = user.Id },
+                    new { message = "Usuario registrado exitosamente", userID = user.Id }
+                );
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Error interno del servidor");
+            }
+
+        }
     }
 }
