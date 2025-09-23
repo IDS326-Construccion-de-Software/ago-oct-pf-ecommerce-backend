@@ -1,4 +1,5 @@
-
+using System.Runtime.Intrinsics.Arm;
+using Microsoft.EntityFrameworkCore;
 using Revenge.Data.Context;
 using Revenge.Infrestructure.Entities;
 using Revenge.Infrestructure.Repositories;
@@ -14,25 +15,25 @@ namespace Revenge.Data.Repositories
             _context = context;
         }
 
-        public Task<Invoice[]?> FindInvoicesByUserAsync(Guid userId, CancellationToken cancellationToken = default)
+        public async Task<Invoice[]?> FindInvoicesByUserAsync(Guid userId, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            Invoice[]? userInvoices = await _context.Invoices.Where(i => i.UserId == userId).ToArrayAsync(cancellationToken);
+            return userInvoices;
+        }
 
-        }
-        public Task<Invoice?> FindInvoiceByIdAsync(Guid invoiceId, CancellationToken cancellationToken = default)
+        public async Task<Invoice?> FindInvoiceByIdAsync(Guid invoiceId, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            Invoice? invoice = await _context.Invoices.FirstOrDefaultAsync(i => i.Id == invoiceId, cancellationToken);
+            return invoice;
+        }
 
-        }
-        public Task<bool> AddInvoiceAsync(Invoice newInvoice, CancellationToken cancellationToken = default)
+        public async Task<bool> AddInvoiceAsync(Invoice newInvoice, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            await _context.AddAsync(newInvoice, cancellationToken);
+            return await _context.SaveChangesAsync(cancellationToken) > 0;
         }
-        public virtual Task<bool> SoftDeleteInvoiceAsync(Guid invoiceId, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
-        public virtual Task<bool> DeleteInvoiceAsync(Guid invoiceId, CancellationToken cancellationToken = default)
+
+        public async Task<bool> DeleteInvoiceAsync(Guid invoiceId, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }

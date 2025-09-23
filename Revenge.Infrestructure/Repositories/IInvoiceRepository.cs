@@ -18,11 +18,6 @@ namespace Revenge.Infrestructure.Repositories
       CancellationToken cancellationToken = default);
 
     //Delete is only to development
-
-    Task<bool> SoftDeleteInvoiceAsync(
-      Guid invoiceId,
-      CancellationToken cancellationToken = default);
-
     Task<bool> DeleteInvoiceAsync(
       Guid invoiceId,
       CancellationToken cancellationToken = default);
