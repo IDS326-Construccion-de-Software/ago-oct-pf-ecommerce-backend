@@ -1,4 +1,5 @@
 ﻿using Revenge.Infrestructure.Entities;
+using System.Security.Principal;
 
 namespace Revenge.Infrestructure.Repositories
 {
@@ -37,5 +38,6 @@ namespace Revenge.Infrestructure.Repositories
             string resetToken,
             string newPassword,
             CancellationToken cancellationToken = default);
+        Task LoginUserAsync(IIdentity? identity, object password, CancellationToken cancellationToken);
     }
 }

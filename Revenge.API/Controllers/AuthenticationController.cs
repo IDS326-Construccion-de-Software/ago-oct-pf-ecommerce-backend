@@ -5,6 +5,7 @@ using Microsoft.VisualBasic;
 using Revenge.Infrestructure.Repositories;
 using Revenge.Data.Models;
 using Revenge.Infrestructure.Entities;
+using NuGet.Protocol;
 
 namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
 {
@@ -53,7 +54,7 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
                     Password = registerUserDTO.Password, //Por hacer: Encriptar
                     Cellphone = registerUserDTO.Cellphone,
                     Birthdate = registerUserDTO.Birthdate,
-                    Directions = registerUserDTO.Directions!= null ? System.Text.Json.JsonSerializer.Serialize(registerUserDTO.Directions) : null,
+                    Directions = registerUserDTO.Directions != null ? System.Text.Json.JsonSerializer.Serialize(registerUserDTO.Directions) : null,
                     NumIdentification = registerUserDTO.NumIdentification,
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow
@@ -74,7 +75,20 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
             {
                 return StatusCode(500, "Error interno del servidor");
             }
+        }
+        [HttpGet("login")]
+        public async Task<ActionResult> Login([FromBody] RegisterUserDTO loginUserDTO, CancellationToken cancellationToken)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
+            try
+            {
+                var result = await _authenticationRepository.LoginUserAsync(
+            catch (Exception)
+            {
+                return StatusCode(500, "Error interno del servidor");
+            }
         }
     }
 }
