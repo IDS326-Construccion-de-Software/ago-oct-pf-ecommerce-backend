@@ -1,13 +1,15 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Revenge.Data.Context;
+using Revenge.Data.Models;
+using Revenge.Infrestructure.Entities;
+using Revenge.Infrestructure.Repositories;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Revenge.Data.Context;
-using Revenge.Infrestructure.Entities;
-using Revenge.Infrestructure.Repositories;
-using Revenge.Data.Models;
 
 namespace Revenge.Data.Repositories
 {
@@ -47,19 +49,19 @@ namespace Revenge.Data.Repositories
             throw new NotImplementedException();
         }
 
-        public async Task<User?> LoginUserAsync(string userId, string plainPassword, CancellationToken cancellationToken = default)
+        public async Task<User?> LoginUserAsync(string email, string plainPassword, CancellationToken ct = default)
         {
+            var user = await _context.Users
+            .AsNoTracking()
+            .FirstOrDefaultAsync(c => c.Email == email, ct);
 
-            var user = await _context.Users.FirstOrDefaultAsync(cancellationToken);
+            if (user is null) return null;
 
-            if (user != null)
-            {
-                return user;
-            }
-
-            throw new Exception("not connected");
-
+            return null; // Password incorrecto
         }
+
+
+
 
         public Task<bool> LogoutUserAsync(string userId, CancellationToken cancellationToken = default)
         {

@@ -1,14 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualBasic;
-using NuGet.Protocol;
 using Revenge.Data.Context;
 using Revenge.Data.Models;
 using Revenge.Infrestructure.Entities;
 using Revenge.Infrestructure.Repositories;
-using System.Runtime.InteropServices;
 
 namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
 {
@@ -24,23 +19,6 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
             _authenticationRepository = authenticationRepository;
         }
 
-
-        //endpoint temporal para probar la conexion 
-        [HttpGet]
-        public async Task<bool> Test(CancellationToken cancellationToken)
-        {
-            try
-            {
-                await _authenticationRepository.LoginUserAsync("", "", cancellationToken);
-                return true;
-
-            }
-            catch (Exception)
-            {
-
-                return false;
-            }
-        }
         [HttpPost("register")]
         public async Task<ActionResult> Register([FromBody] RegisterUserDTO registerUserDTO, CancellationToken cancellationToken)
         {
@@ -81,38 +59,49 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
             }
         }
 
-        // aun no funciona
+        // funcionamiento parcial
         [HttpPost("login")]
         public async Task<ActionResult> Login([FromBody] LoginUserDTO loginUserDTO, CancellationToken cancellationToken)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+
             try
             {
-                // Buscar usuario por email
-                var usuario = await _context.Users
-                    .FirstOrDefaultAsync(c => c.Email == loginUserDTO.Email, cancellationToken);
+                var user = await _authenticationRepository.LoginUserAsync(
+                    email: loginUserDTO.Email,
+                    plainPassword: loginUserDTO.Password,
+                    cancellationToken: cancellationToken
+                    );
 
-                if (usuario == null)
-                    return Unauthorized(new { mensaje = "Usuario no encontrado" });
-
-                // Verificar contraseña
-                // necesito primero que se hasheen las contraseñas para yo saber que metodo tamo usando xd
-                //var result = _passwordHasher.VerifyHashedPassword( 
-                //    loginUserDTO.Email,
-                //    usuario.Password, // aquí debe estar guardada la contraseña hasheada
-                //    loginUserDTO.Password
-                //);
-
-                if (result == PasswordVerificationResult.Failed)
-                    return Unauthorized(new { mensaje = "Contraseña incorrecta" });
+                if (user is null)
+                    return Unauthorized(new { mensaje = "Credenciales inválidas" });
+                else
+                {
+                    return Ok(new
+                    {
+                        mensaje = "Login exitoso",
+                        user = new { user.Id, user.Name, user.Email }
+                    });
+                }
             }
-            
+            catch (OperationCanceledException)
+            {
+                return StatusCode(499, "Solicitud cancelada por el cliente");
+            }
             catch (Exception)
             {
                 return StatusCode(500, "Error interno del servidor");
             }
-
         }
+
+        //[HttpPost("auth0Login")]
+        //public async Task<IActionResult> Auth0Login([FromBody] LoginUserDTO auth0Login, CancellationToken cancellationToken)
+        //{
+        //    if (!ModelState.IsValid)
+        //        return BadRequest(ModelState);
+
+        //    return 0;
+        //}
     }
 }
