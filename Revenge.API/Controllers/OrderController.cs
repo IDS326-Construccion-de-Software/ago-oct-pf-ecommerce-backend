@@ -11,11 +11,11 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
 {
     [Route("api/order")]
     [ApiController]
-    public class OrdersController : ControllerBase
+    public class OrderController : ControllerBase
     {
         private readonly RevengeDbContext _context;
 
-        public OrdersController(RevengeDbContext context)
+        public OrderController(RevengeDbContext context)
         {
             _context = context;
         }
