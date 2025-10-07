@@ -1,10 +1,9 @@
-﻿using System.Runtime.InteropServices;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.VisualBasic;
-using Revenge.Infrestructure.Repositories;
+using Revenge.Data.Context;
 using Revenge.Data.Models;
 using Revenge.Infrestructure.Entities;
+using Revenge.Infrestructure.Repositories;
 
 namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
 {
@@ -13,29 +12,13 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
     public class AuthenticationController : ControllerBase
     {
         public readonly IAuthenticationRepository _authenticationRepository;
+        private readonly RevengeDbContext _context;
 
         public AuthenticationController(IAuthenticationRepository authenticationRepository)
         {
             _authenticationRepository = authenticationRepository;
         }
 
-
-        //endpoint temporal para probar la conexion 
-        [HttpGet]
-        public async Task<bool> Test(CancellationToken cancellationToken)
-        {
-            try
-            {
-                await _authenticationRepository.LoginUserAsync("", "", cancellationToken);
-                return true;
-
-            }
-            catch (Exception)
-            {
-
-                return false;
-            }
-        }
         [HttpPost("register")]
         public async Task<ActionResult> Register([FromBody] RegisterUserDTO registerUserDTO, CancellationToken cancellationToken)
         {
@@ -53,7 +36,7 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
                     Password = registerUserDTO.Password, //Por hacer: Encriptar
                     Cellphone = registerUserDTO.Cellphone,
                     Birthdate = registerUserDTO.Birthdate,
-                    Directions = registerUserDTO.Directions!= null ? System.Text.Json.JsonSerializer.Serialize(registerUserDTO.Directions) : null,
+                    Directions = registerUserDTO.Directions != null ? System.Text.Json.JsonSerializer.Serialize(registerUserDTO.Directions) : null,
                     NumIdentification = registerUserDTO.NumIdentification,
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow
@@ -74,7 +57,51 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
             {
                 return StatusCode(500, "Error interno del servidor");
             }
-
         }
+
+        // funcionamiento parcial
+        [HttpPost("login")]
+        public async Task<ActionResult> Login([FromBody] LoginUserDTO loginUserDTO, CancellationToken cancellationToken)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            try
+            {
+                var user = await _authenticationRepository.LoginUserAsync(
+                    email: loginUserDTO.Email,
+                    plainPassword: loginUserDTO.Password,
+                    cancellationToken: cancellationToken
+                    );
+
+                if (user is null)
+                    return Unauthorized(new { mensaje = "Credenciales inválidas" });
+                else
+                {
+                    return Ok(new
+                    {
+                        mensaje = "Login exitoso",
+                        user = new { user.Id, user.Name, user.Email }
+                    });
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                return StatusCode(499, "Solicitud cancelada por el cliente");
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Error interno del servidor");
+            }
+        }
+
+        //[HttpPost("auth0Login")]
+        //public async Task<IActionResult> Auth0Login([FromBody] LoginUserDTO auth0Login, CancellationToken cancellationToken)
+        //{
+        //    if (!ModelState.IsValid)
+        //        return BadRequest(ModelState);
+
+        //    return 0;
+        //}
     }
 }

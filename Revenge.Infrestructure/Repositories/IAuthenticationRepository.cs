@@ -1,11 +1,16 @@
 ﻿using Revenge.Infrestructure.Entities;
+using System.Security.Principal;
 
 namespace Revenge.Infrestructure.Repositories
 {
     public interface IAuthenticationRepository
     {
+        //Task<User?> LoginAuth0(
+        //    string token,
+        //    CancellationToken cancellationToken = default);
+
         Task<User?> LoginUserAsync(
-            string userId,
+            string email,
             string plainPassword,
             CancellationToken cancellationToken = default);
 
