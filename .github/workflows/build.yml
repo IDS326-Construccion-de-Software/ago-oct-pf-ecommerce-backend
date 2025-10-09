@@ -14,9 +14,9 @@ jobs:
   sonarqube:
     name: SonarQube
     runs-on: ubuntu-latest
-    permission:
+    permissions:
       contents: read
-      pull_requests: write
+      pull-requests: write
     steps:
       - uses: actions/checkout@v3
         with:
