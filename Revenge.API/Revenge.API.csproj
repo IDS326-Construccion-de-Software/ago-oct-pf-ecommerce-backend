@@ -4,7 +4,7 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <RootNamespace>ago_oct_pf_ecommerce_backend</RootNamespace>
+    <RootNamespace>Revenge.API_oct_pf_ecommerce_backend</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,12 +14,15 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.0" />
+    <PackageReference Include="Npgsql" Version="9.0.3" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.*" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
+    <ProjectReference Include="..\Revenge.Data\Revenge.Data.csproj" />
+    <ProjectReference Include="..\Revenge.Infrestructure\Revenge.Infrestructure.csproj" />
   </ItemGroup>
 
 </Project>
