@@ -23,6 +23,9 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
         public async Task<ActionResult<IEnumerable<Order>>> GetOrders()
         {
             var orders = await _orderRepository.GetAllAsync();
+            if (orders == null || orders.Length == 0)
+                return NotFound("No se encontraron órdenes registradas.");
+
             return Ok(orders);
         }
 
@@ -32,7 +35,7 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
         {
             var order = await _orderRepository.GetByIdAsync(id);
             if (order == null)
-                return NotFound();
+                return NotFound($"No se encontró ninguna orden con el ID: {id}.");
 
             return Ok(order);
         }
@@ -42,11 +45,11 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
         public async Task<IActionResult> PutOrder(Guid id, Order order)
         {
             if (id != order.Id)
-                return BadRequest();
+                return BadRequest("El ID no coincide con la orden enviada.");
 
             var updated = await _orderRepository.UpdateAsync(order);
             if (!updated)
-                return NotFound();
+                return NotFound($"No existe una orden con el ID: {id} para actualizar.");
 
             return NoContent();
         }
@@ -70,7 +73,7 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
         {
             var deleted = await _orderRepository.DeleteAsync(id);
             if (!deleted)
-                return NotFound();
+                return NotFound($"No se encontró ninguna orden con el ID: {id} para eliminar.");
 
             return NoContent();
         }

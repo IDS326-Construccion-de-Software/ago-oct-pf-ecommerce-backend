@@ -23,6 +23,9 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
         public async Task<ActionResult<IEnumerable<Product>>> GetProducts(CancellationToken cancellationToken)
         {
             var products = await _productRepository.GetAllAsync(cancellationToken);
+            if (products == null || products.Length == 0)
+                return NotFound("No se encontraron productos registrados.");
+
             return Ok(products);
         }
 
@@ -31,11 +34,10 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
         {
             var product = await _productRepository.GetByIdAsync(id, cancellationToken);
             if (product == null)
-                return NotFound();
+                return NotFound($"No se encontró ningún producto con el ID: {id}.");
 
             return Ok(product);
         }
-
 
         [HttpPost]
         public async Task<ActionResult> PostProduct(Product product, CancellationToken cancellationToken)
@@ -51,11 +53,11 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
         public async Task<IActionResult> PutProduct(Guid id, Product product, CancellationToken cancellationToken)
         {
             if (id != product.Id)
-                return BadRequest("El ID no coincide con el producto.");
+                return BadRequest("El ID no coincide con el producto enviado.");
 
             var exists = await _productRepository.ExistsAsync(id, cancellationToken);
             if (!exists)
-                return NotFound();
+                return NotFound($"No existe un producto con el ID: {id}.");
 
             var updated = await _productRepository.UpdateAsync(product, cancellationToken);
             if (!updated)
@@ -69,7 +71,7 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
         {
             var deleted = await _productRepository.DeleteAsync(id, cancellationToken);
             if (!deleted)
-                return NotFound();
+                return NotFound($"No se encontró ningún producto con el ID: {id} para eliminar.");
 
             return NoContent();
         }
