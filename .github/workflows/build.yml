@@ -9,7 +9,7 @@ on:
     - opened
     - synchronize
     - reopened
-  worflow_dispatch:
+  workflow_dispatch:
 jobs:
   sonarqube:
     name: SonarQube
