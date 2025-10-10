@@ -15,9 +15,9 @@ public partial class Invoice
 
     public decimal Total { get; set; }
 
-    public decimal? Tax { get; set; }
+    public decimal Tax { get; set; }
 
-    public string? Url { get; set; }
+    public string Url { get; set; } = null!;
 
     public DateTime? UpdatedAt { get; set; }
 
