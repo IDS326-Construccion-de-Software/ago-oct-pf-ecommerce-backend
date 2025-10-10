@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Revenge.Infrestructure.Entities;
 using Revenge.Infrestructure.Repositories;
+using Microsoft.EntityFrameworkCore;
+using Revenge.Data.Context;
 
 namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
 {
