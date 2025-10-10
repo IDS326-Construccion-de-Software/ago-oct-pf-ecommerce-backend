@@ -9,12 +9,6 @@ using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//Configuration
-var configuration = new ConfigurationBuilder()
-    .AddJsonFile("appsettings.json", optional: false)
-    .Build();
-
-
 //configuracion del Auth0
 builder.Services.AddAuthentication(options =>
 {
@@ -27,8 +21,6 @@ builder.Services.AddAuthentication(options =>
     options.Audience = builder.Configuration["Auth0:Audience"];
 });
 
-
-builder.Services.ConfigureConnection(configuration);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
