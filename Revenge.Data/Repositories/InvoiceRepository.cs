@@ -46,5 +46,10 @@ namespace Revenge.Data.Repositories
             return await _context.SaveChangesAsync(cancellationToken) > 0;
         }
 
+        public async Task<bool> ExistsAsync(Guid invoiceId, CancellationToken cancellationToken = default)
+        {
+            return await _context.Invoices.AnyAsync(i => i.Id == invoiceId, cancellationToken);
+        }
+
     }
 }

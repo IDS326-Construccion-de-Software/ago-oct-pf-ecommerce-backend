@@ -21,5 +21,10 @@ namespace Revenge.Infrestructure.Repositories
     Task<bool> DeleteInvoiceAsync(
       Guid invoiceId,
       CancellationToken cancellationToken = default);
+
+      Task<bool> ExistsAsync(
+      Guid invoiceId,
+      CancellationToken cancellationToken = default);
   }
+
 }
