@@ -79,7 +79,7 @@ namespace Revenge.Data.Repositories
             throw new NotImplementedException();
         }
 
-        public async Task<bool> ExistAsync(Guid userId, CancellationToken cancellationToken = default)
+        public async Task<bool> ExistsAsync(Guid userId, CancellationToken cancellationToken = default)
         {
             return await _context.Users.AnyAsync(u => u.Id == userId, cancellationToken);
         }

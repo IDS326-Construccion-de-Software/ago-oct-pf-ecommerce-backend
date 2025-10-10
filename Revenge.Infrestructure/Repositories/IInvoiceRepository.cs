@@ -5,7 +5,7 @@ namespace Revenge.Infrestructure.Repositories
 {
   public interface IInvoiceRepository
   {
-    Task<Invoice[]?> FindInvoicesByUserAsync(
+    Task<Invoice[]> FindInvoicesByUserAsync(
         Guid userId,
         CancellationToken cancellationToken = default);
 

@@ -15,9 +15,9 @@ namespace Revenge.Data.Repositories
             _context = context;
         }
 
-        public async Task<Invoice[]?> FindInvoicesByUserAsync(Guid userId, CancellationToken cancellationToken = default)
+        public async Task<Invoice[]> FindInvoicesByUserAsync(Guid userId, CancellationToken cancellationToken = default)
         {
-            Invoice[]? userInvoices = await _context.Invoices.Where(i => i.UserId == userId).ToArrayAsync(cancellationToken);
+            Invoice[] userInvoices = await _context.Invoices.Where(i => i.UserId == userId).ToArrayAsync(cancellationToken);
             return userInvoices;
         }
 
@@ -35,7 +35,16 @@ namespace Revenge.Data.Repositories
 
         public async Task<bool> DeleteInvoiceAsync(Guid invoiceId, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            Invoice invoice = new Invoice
+            {
+                Id = invoiceId
+            };
+
+            _context.Attach(invoice);
+            _context.Remove(invoice);
+
+            return await _context.SaveChangesAsync(cancellationToken) > 0;
         }
+
     }
 }

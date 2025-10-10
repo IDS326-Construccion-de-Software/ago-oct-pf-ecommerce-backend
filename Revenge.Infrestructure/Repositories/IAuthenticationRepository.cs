@@ -43,7 +43,7 @@ namespace Revenge.Infrestructure.Repositories
             string newPassword,
             CancellationToken cancellationToken = default);
 
-        Task<bool> ExistAsync (
+        Task<bool> ExistsAsync (
             Guid id,
             CancellationToken cancellationToken = default
         );
