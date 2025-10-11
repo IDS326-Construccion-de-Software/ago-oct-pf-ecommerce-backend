@@ -16,14 +16,6 @@ namespace Revenge.Data.Context
         {
         }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured)
-            {
-                optionsBuilder.UseNpgsql("Host=trolley.proxy.rlwy.net;Port=56534;Database=railway;Username=postgres;Password=smUnVchZEkHFjDsoPoxHrTDVEXqjzBJq;SslMode=Require;TrustServerCertificate=true");
-            }
-        }
-
         public DbSet<Cartitem> Cartitems { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Invoice> Invoices { get; set; }

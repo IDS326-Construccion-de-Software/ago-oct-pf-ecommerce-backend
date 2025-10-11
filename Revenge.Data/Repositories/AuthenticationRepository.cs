@@ -44,7 +44,7 @@ namespace Revenge.Data.Repositories
             }
         }
 
-        public Task<bool> ChangePasswordAsync(string userId, string currentPassword, string newPassword, CancellationToken cancellationToken = default)
+        public Task<bool> ChangePasswordAsync(Guid userId, string currentPassword, string newPassword, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
@@ -59,12 +59,13 @@ namespace Revenge.Data.Repositories
 
             return null; // Password incorrecto
         }
-        public Task<bool> LogoutUserAsync(string userId, CancellationToken cancellationToken = default)
+
+        public Task<bool> LogoutUserAsync(Guid userId, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
 
-        public Task<bool> ResetPasswordAsync(string userId, string resetToken, string newPassword, CancellationToken cancellationToken = default)
+        public Task<bool> ResetPasswordAsync(Guid userId, string resetToken, string newPassword, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
@@ -74,7 +75,7 @@ namespace Revenge.Data.Repositories
             throw new NotImplementedException();
         }
 
-        public Task<bool> VerifyEmailAsync(string userId, string verificationCode, CancellationToken cancellationToken = default)
+        public Task<bool> VerifyEmailAsync(Guid userId, string verificationCode, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
@@ -112,5 +113,10 @@ namespace Revenge.Data.Repositories
         // {
         //     return await _context.Users.AnyAsync(u => u.Email == email, cancellationToken);
         // }
+        
+        public async Task<bool> ExistsAsync(Guid userId, CancellationToken cancellationToken = default)
+        {
+            return await _context.Users.AnyAsync(u => u.Id == userId, cancellationToken);
+        }
     }
 }
