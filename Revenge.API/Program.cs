@@ -9,6 +9,12 @@ using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var configuration = new ConfigurationBuilder()
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    .Build();
+
+builder.Services.ConfigureConnection(configuration);
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowLocalVite",
