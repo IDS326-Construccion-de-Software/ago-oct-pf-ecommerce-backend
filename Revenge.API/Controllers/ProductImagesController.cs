@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Revenge.Data.Context;
 using Revenge.Infrestructure.Entities;
+using Revenge.Infrestructure.Repositories;
 
 namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
 {
@@ -13,84 +12,66 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
     [ApiController]
     public class ProductImagesController : ControllerBase
     {
-        private readonly RevengeDbContext _context;
+        private readonly IProductImageRepository _repository;
 
-        public ProductImagesController(RevengeDbContext context)
+        public ProductImagesController(IProductImageRepository repository)
         {
-            _context = context;
+            _repository = repository;
         }
 
-        // GET: api/productimage
+        //  GET: api/productimage
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Productimage>>> GetProductImages()
+        public async Task<ActionResult<IEnumerable<Productimage>>> GetProductImages(CancellationToken cancellationToken)
         {
-            return await _context.Productimages
-                .Include(p => p.Product)
-                .ToListAsync();
+            var images = await _repository.GetAllAsync(cancellationToken);
+            return Ok(images);
         }
 
-        // GET: api/productimage/{id}
+        //  GET: api/productimage/{id}
         [HttpGet("{id}")]
-        public async Task<ActionResult<Productimage>> GetProductImageById(Guid id)
+        public async Task<ActionResult<Productimage>> GetProductImageById(Guid id, CancellationToken cancellationToken)
         {
-            var image = await _context.Productimages.FindAsync(id);
-
+            var image = await _repository.GetByIdAsync(id, cancellationToken);
             if (image == null)
                 return NotFound();
 
-            return image;
+            return Ok(image);
         }
 
-        // GET: api/productimage/primary/{productId}
+        //  GET: api/productimage/primary/{productId}
         [HttpGet("primary/{productId}")]
-        public async Task<ActionResult<Productimage>> GetPrimaryImage(Guid productId)
+        public async Task<ActionResult<Productimage>> GetPrimaryImage(Guid productId, CancellationToken cancellationToken)
         {
-            var primaryImage = await _context.Productimages
-                .FirstOrDefaultAsync(p => p.ProductId == productId && p.IsPrimary);
+            var primaryImage = await _repository.GetPrimaryByProductIdAsync(productId, cancellationToken);
 
             if (primaryImage == null)
                 return NotFound("El producto no tiene una imagen principal.");
 
-            return primaryImage;
+            return Ok(primaryImage);
         }
 
-        // POST: api/productimage
+        //  POST: api/productimage
         [HttpPost]
-        public async Task<ActionResult<Productimage>> PostProductImage(Productimage image)
+        public async Task<ActionResult<Productimage>> PostProductImage(Productimage image, CancellationToken cancellationToken)
         {
-            var productExists = await _context.Products.AnyAsync(p => p.Id == image.ProductId);
-            if (!productExists)
-                return BadRequest("El producto especificado no existe.");
-
-            // Si la imagen es principal, desmarcar las otras
-            if (image.IsPrimary)
+            try
             {
-                var existingPrimary = await _context.Productimages
-                    .Where(pi => pi.ProductId == image.ProductId && pi.IsPrimary)
-                    .ToListAsync();
-
-                foreach (var img in existingPrimary)
-                {
-                    img.IsPrimary = false;
-                }
+                var createdImage = await _repository.AddAsync(image, cancellationToken);
+                return CreatedAtAction(nameof(GetProductImageById), new { id = createdImage.Id }, createdImage);
             }
-
-            _context.Productimages.Add(image);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetProductImageById), new { id = image.Id }, image);
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
-        // DELETE: api/productimage/{id}
+        //  DELETE: api/productimage/{id}
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteProductImage(Guid id)
+        public async Task<IActionResult> DeleteProductImage(Guid id, CancellationToken cancellationToken)
         {
-            var image = await _context.Productimages.FindAsync(id);
-            if (image == null)
+            var deleted = await _repository.DeleteAsync(id, cancellationToken);
+            if (!deleted)
                 return NotFound();
-
-            _context.Productimages.Remove(image);
-            await _context.SaveChangesAsync();
 
             return NoContent();
         }
