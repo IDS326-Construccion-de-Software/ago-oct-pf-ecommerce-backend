@@ -18,17 +18,16 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
         public readonly IAuthenticationRepository _authenticationRepository;
         private readonly IConfiguration _configuration;
         private readonly HttpClient _httpClient;
-        private readonly RevengeDbContext _context;
 
 
         public AuthenticationController(
             IAuthenticationRepository authenticationRepository,
             IConfiguration configuration,
-            HttpClient httpClient)
+            IHttpClientFactory httpClientFactory)
         {
             _authenticationRepository = authenticationRepository;
             _configuration = configuration;
-            _httpClient = httpClient;
+            _httpClient = httpClientFactory.CreateClient();
         }
 
         [HttpPost("register")]
@@ -57,7 +56,7 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
                         full_name = registerUserDTO.Name,
                         cellphone = registerUserDTO.Cellphone,
                         birthdate = registerUserDTO.Birthdate?.ToString("yyyy-MM-dd"),
-                        Directions = registerUserDTO.Directions != null ? System.Text.Json.JsonSerializer.Serialize(registerUserDTO.Directions) : null,
+                        //Directions = registerUserDTO.Directions != null ? System.Text.Json.JsonSerializer.Serialize(registerUserDTO.Directions) : null,
                         numIdentification = registerUserDTO.NumIdentification
                     }
                 };
