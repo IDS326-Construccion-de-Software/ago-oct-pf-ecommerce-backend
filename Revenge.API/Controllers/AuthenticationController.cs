@@ -1,9 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NuGet.Protocol.Plugins;
 using Revenge.Data.Context;
 using Revenge.Data.Models;
 using Revenge.Infrestructure.Entities;
 using Revenge.Infrestructure.Repositories;
+using Auth0.ManagementApi;
+using System.Text.Json;
+using Auth0.ManagementApi.Models;
 
 namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
 {
@@ -12,11 +16,18 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
     public class AuthenticationController : ControllerBase
     {
         public readonly IAuthenticationRepository _authenticationRepository;
-        private readonly RevengeDbContext _context;
+        private readonly IConfiguration _configuration;
+        private readonly HttpClient _httpClient;
 
-        public AuthenticationController(IAuthenticationRepository authenticationRepository)
+
+        public AuthenticationController(
+            IAuthenticationRepository authenticationRepository,
+            IConfiguration configuration,
+            IHttpClientFactory httpClientFactory)
         {
             _authenticationRepository = authenticationRepository;
+            _configuration = configuration;
+            _httpClient = httpClientFactory.CreateClient();
         }
 
         [HttpPost("register")]
@@ -27,35 +38,109 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
 
             try
             {
-                //var existingUser = await _authenticationRepository.get;
-                var user = new User
+                var token = await GetAuth0TokenAsync();
+                var domain = _configuration["Auth0:Domain"];//En appsettings
+                var connectionName = _configuration["Auth0:Connection"];//En appsettings
+
+                //Crear usuario en Auth0
+                var client = new ManagementApiClient(token, domain);
+                var userRequest = new UserCreateRequest
                 {
-                    Id = Guid.NewGuid(),
-                    Name = registerUserDTO.Name,
                     Email = registerUserDTO.Email,
-                    Password = registerUserDTO.Password, //Por hacer: Encriptar
-                    Cellphone = registerUserDTO.Cellphone,
-                    Birthdate = registerUserDTO.Birthdate,
-                    Directions = registerUserDTO.Directions != null ? System.Text.Json.JsonSerializer.Serialize(registerUserDTO.Directions) : null,
-                    NumIdentification = registerUserDTO.NumIdentification,
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow
-
+                    Password = registerUserDTO.Password, //Auth0 Encripta
+                    Connection = connectionName,
+                    EmailVerified = false,
+                    VerifyEmail = true,
+                    UserMetadata = new
+                    {
+                        full_name = registerUserDTO.Name,
+                        cellphone = registerUserDTO.Cellphone,
+                        birthdate = registerUserDTO.Birthdate?.ToString("yyyy-MM-dd"),
+                        //Directions = registerUserDTO.Directions != null ? System.Text.Json.JsonSerializer.Serialize(registerUserDTO.Directions) : null,
+                        numIdentification = registerUserDTO.NumIdentification
+                    }
                 };
-                var result = await _authenticationRepository.AddUserAsync(user, cancellationToken);
-
-                if (!result)
-                    return StatusCode(500, "Error al registrar usuario");
-
+                var auth0User = await client.Users.CreateAsync(userRequest);
                 return CreatedAtAction(
                     nameof(Register),
-                    new { id = user.Id },
-                    new { message = "Usuario registrado exitosamente", userID = user.Id }
+                    new { id = auth0User.UserId },
+                    new
+                    {
+                        message = "Usuario registrado exitosamente. Por favor, verifica tu email para activar tu cuenta.",
+                        auth0UserId = auth0User.UserId,
+                        email = auth0User.Email,
+                        emailVerified = auth0User.EmailVerified,
+                        createdAt = auth0User.CreatedAt
+                    }
                 );
+                // No se pueda implementar esta parte hasta que se de la creacion de UserProfile en la BD
+                // var user = new User
+                // {
+                //     Id = Guid.NewGuid(),
+                //     Auth0UserId = auth0User.UserId,
+                //     Name = registerUserDTO.Name,
+                //     Email = registerUserDTO.Email,
+                //     Password = null, // NO guardar contraseña
+                //     Cellphone = registerUserDTO.Cellphone,
+                //     Birthdate = registerUserDTO.Birthdate.HasValue 
+                //         ? DateOnly.FromDateTime(registerUserDTO.Birthdate.Value.ToDateTime(TimeOnly.MinValue))
+                //         : null,
+                //     Directions = registerUserDTO.Directions != null 
+                //         ? JsonSerializer.Serialize(registerUserDTO.Directions) 
+                //         : null,
+                //     NumIdentification = registerUserDTO.NumIdentification,
+                //     CreatedAt = DateTime.UtcNow,
+                //     UpdatedAt = DateTime.UtcNow
+                // };
+                // var saved = _authenticationRepository.
+
+                // if (!result)
+                //     return StatusCode(500, "Error al registrar usuario");
+
+                // return CreatedAtAction(
+                //     nameof(Register),
+                //     new { id = user.Id },
+                //     new { message = "Usuario registrado exitosamente", userID = user.Id }
+                // );
             }
-            catch (Exception)
+            catch (Auth0.Core.Exceptions.ApiException ex)
             {
-                return StatusCode(500, "Error interno del servidor");
+                if (ex.Message.Contains("user already exists") || ex.Message.Contains("already exist"))
+                    return Conflict(new { message = "El email ya está registrado" });
+
+                if (ex.Message.Contains("PasswordStrengthError") || ex.Message.Contains("password"))
+                    return BadRequest(new { message = "La contraseña no cumple con los requisitos de seguridad. Debe tener al menos 8 caracteres." });
+
+                return StatusCode(500, new { message = $"Error en Auth0: {ex.Message}" });
+            }
+            catch (OperationCanceledException)
+            {
+                return StatusCode(499, new { message = "Solicitud cancelada" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = $"Error interno: {ex.Message}" });
+            }
+        }
+        [HttpGet("test-auth0")]
+        public async Task<ActionResult> TestAuth0Connection()
+        {
+            try
+            {
+                var token = await GetAuth0TokenAsync();
+                var domain = _configuration["Auth0:Domain"];
+                
+                return Ok(new 
+                { 
+                    message = "Conexión exitosa con Auth0", 
+                    hasToken = !string.IsNullOrEmpty(token),
+                    domain = domain,
+                    tokenPreview = token?.Substring(0, Math.Min(20, token.Length)) + "..."
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = $"Error de conexión: {ex.Message}" });
             }
         }
 
@@ -93,6 +178,28 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
             {
                 return StatusCode(500, "Error interno del servidor");
             }
+        }
+        private async Task<string> GetAuth0TokenAsync()
+        {
+            var domain = _configuration["Auth0:Domain"];//Desde el appsettings
+            var clientId = _configuration["Auth0:ClientId"];//Desde el appsettings
+            var clientSecret = _configuration["Auth0:ClientSecret"];//Desde el appsettings
+
+            var tokenRequest = new
+            {
+                client_id = clientId,
+                client_secret = clientSecret,
+                audience = $"https://{domain}/api/v2/",
+                grant_type = "client_credentials"
+            };
+
+            var response = await _httpClient.PostAsJsonAsync($"https://{domain}/oauth/token", tokenRequest);
+
+            if (!response.IsSuccessStatusCode)
+                throw new Exception("Error obteniendo token de Auth0");
+
+            var tokenData = await response.Content.ReadFromJsonAsync<JsonElement>();
+            return tokenData.GetProperty("access_token").GetString()!;
         }
 
         //[HttpPost("auth0Login")]

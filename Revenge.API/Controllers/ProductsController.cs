@@ -1,7 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Revenge.Data.Context;
 using Revenge.Infrestructure.Entities;
+using Revenge.Infrestructure.Repositories;
 
 namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
 {
@@ -9,95 +14,68 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
     [ApiController]
     public class ProductsController : ControllerBase
     {
-        private readonly RevengeDbContext _context;
+        private readonly IProductRepository _productRepository;
 
-        public ProductsController(RevengeDbContext context)
+        public ProductsController(IProductRepository productRepository)
         {
-            _context = context;
+            _productRepository = productRepository;
         }
 
-        // GET: api/Products
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
+        public async Task<ActionResult<IEnumerable<Product>>> GetProducts(CancellationToken cancellationToken)
         {
-            return await _context.Products.ToListAsync();
+            var products = await _productRepository.GetAllAsync(cancellationToken);
+            if (products == null || products.Length == 0)
+                return NotFound("No se encontraron productos registrados.");
+
+            return Ok(products);
         }
 
-        // GET: api/Products/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Product>> GetProduct(Guid id)
+        public async Task<ActionResult<Product>> GetProduct(Guid id, CancellationToken cancellationToken)
         {
-            var product = await _context.Products.FindAsync(id);
-
+            var product = await _productRepository.GetByIdAsync(id, cancellationToken);
             if (product == null)
-            {
-                return NotFound();
-            }
+                return NotFound($"No se encontró ningún producto con el ID: {id}.");
 
-            return product;
+            return Ok(product);
         }
 
-        // PUT: api/Products/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPost]
+        public async Task<ActionResult> PostProduct(Product product, CancellationToken cancellationToken)
+        {
+            var result = await _productRepository.AddAsync(product, cancellationToken);
+            if (!result)
+                return BadRequest("No se pudo crear el producto.");
+
+            return CreatedAtAction(nameof(GetProduct), new { id = product.Id }, product);
+        }
+
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutProduct(Guid id, Product product)
+        public async Task<IActionResult> PutProduct(Guid id, Product product, CancellationToken cancellationToken)
         {
             if (id != product.Id)
-            {
-                return BadRequest();
-            }
+                return BadRequest("El ID no coincide con el producto enviado.");
 
-            _context.Entry(product).State = EntityState.Modified;
+            var exists = await _productRepository.ExistsAsync(id, cancellationToken);
+            if (!exists)
+                return NotFound($"No existe un producto con el ID: {id}.");
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ProductExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            var updated = await _productRepository.UpdateAsync(product, cancellationToken);
+            if (!updated)
+                return BadRequest("Error al actualizar el producto.");
 
             return NoContent();
         }
 
-        // POST: api/Products
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Product>> PostProduct(Product product)
-        {
-            _context.Products.Add(product);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetProduct", new { id = product.Id }, product);
-        }
-
-        // DELETE: api/Products/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteProduct(Guid id)
+        public async Task<IActionResult> DeleteProduct(Guid id, CancellationToken cancellationToken)
         {
-            var product = await _context.Products.FindAsync(id);
-            if (product == null)
-            {
-                return NotFound();
-            }
-
-            _context.Products.Remove(product);
-            await _context.SaveChangesAsync();
+            var deleted = await _productRepository.DeleteAsync(id, cancellationToken);
+            if (!deleted)
+                return NotFound($"No se encontró ningún producto con el ID: {id} para eliminar.");
 
             return NoContent();
-        }
-
-        private bool ProductExists(Guid id)
-        {
-            return _context.Products.Any(e => e.Id == id);
         }
     }
 }

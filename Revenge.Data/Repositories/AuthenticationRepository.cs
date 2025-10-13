@@ -59,6 +59,7 @@ namespace Revenge.Data.Repositories
 
             return null; // Password incorrecto
         }
+
         public Task<bool> LogoutUserAsync(Guid userId, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
@@ -78,7 +79,41 @@ namespace Revenge.Data.Repositories
         {
             throw new NotImplementedException();
         }
+        // ===== MÉTODOS NUEVOS PARA AUTH0 (Por implementar) =====
+        
+        // public async Task<bool> SaveUserProfileAsync(User user, CancellationToken cancellationToken)
+        // {
+        //     try
+        //     {
+        //         user.Password = null;
+        //         await _context.Users.AddAsync(user, cancellationToken);
+        //         return await _context.SaveChangesAsync(cancellationToken) > 0;
+        //     }
+        //     catch
+        //     {
+        //         return false;
+        //     }
+        // }
 
+        // public async Task<User?> GetUserProfileByEmailAsync(string email, CancellationToken cancellationToken)
+        // {
+        //     return await _context.Users
+        //         .AsNoTracking()
+        //         .FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
+        // }
+
+        // public async Task<User?> GetUserProfileByAuth0IdAsync(string auth0UserId, CancellationToken cancellationToken)
+        // {
+        //     return await _context.Users
+        //         .AsNoTracking()
+        //         .FirstOrDefaultAsync(u => u.Auth0UserId == auth0UserId, cancellationToken);
+        // }
+
+        // public async Task<bool> UserExistsByEmailAsync(string email, CancellationToken cancellationToken)
+        // {
+        //     return await _context.Users.AnyAsync(u => u.Email == email, cancellationToken);
+        // }
+        
         public async Task<bool> ExistsAsync(Guid userId, CancellationToken cancellationToken = default)
         {
             return await _context.Users.AnyAsync(u => u.Id == userId, cancellationToken);

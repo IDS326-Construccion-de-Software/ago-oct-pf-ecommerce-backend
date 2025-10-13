@@ -9,6 +9,26 @@ using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var configuration = new ConfigurationBuilder()
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    .Build();
+
+builder.Services.ConfigureConnection(configuration);
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowLocalVite",
+        policy =>
+        {
+            policy
+                .WithOrigins("http://localhost:5173", "https://localhost:5173")
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
+        });
+});
+
+
 //configuracion del Auth0
 builder.Services.AddAuthentication(options =>
 {
@@ -24,13 +44,13 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddHttpClient();
 
 var app = builder.Build();
 
 app.UseSwagger();
 app.UseSwaggerUI();
-
-app.UseHttpsRedirection();
+app.UseCors("AllowLocalVite");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
