@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Revenge.Data.Repositories;
 using Revenge.Infrestructure.Entities;
 using Revenge.Infrestructure.Repositories;
 
@@ -8,31 +9,31 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
     [ApiController]
     public class CartItemController : ControllerBase
     {
-        private readonly ICartItemRepository _repository;
+        private readonly ICartItemRepository _ICartItemRepository;
 
-        public CartItemController(ICartItemRepository repository)
+        public CartItemController(ICartItemRepository ICartItemRepository)
         {
-            _repository = repository;
+            _ICartItemRepository = ICartItemRepository;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Cartitem>>> GetAll()
         {
-            var items = await _repository.GetAllAsync();
+            var items = await _ICartItemRepository.GetAllAsync();
             return Ok(items);
         }
 
         [HttpGet("{id:guid}")]
         public async Task<ActionResult<Cartitem>> GetById(Guid id)
         {
-            var item = await _repository.GetByIdAsync(id);
+            var item = await _ICartItemRepository.GetByIdAsync(id);
             return item == null ? NotFound() : Ok(item);
         }
 
         [HttpGet("cart/{cartId:guid}")]
         public async Task<ActionResult<IEnumerable<Cartitem>>> GetByCartId(Guid cartId)
         {
-            var items = await _repository.GetByCartIdAsync(cartId);
+            var items = await _ICartItemRepository.GetByCartIdAsync(cartId);
             return Ok(items);
         }
 
@@ -42,7 +43,7 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
             item.Id = Guid.NewGuid();
             item.AddedAt = DateTime.UtcNow;
 
-            var result = await _repository.AddAsync(item);
+            var result = await _ICartItemRepository.AddAsync(item);
             return result ? Ok(item) : BadRequest("Error creating cart item.");
         }
 
@@ -51,14 +52,14 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
         {
             if (id != item.Id) return BadRequest();
 
-            var result = await _repository.UpdateAsync(item);
+            var result = await _ICartItemRepository.UpdateAsync(item);
             return result ? NoContent() : NotFound();
         }
 
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var result = await _repository.DeleteAsync(id);
+            var result = await _ICartItemRepository.DeleteAsync(id);
             return result ? NoContent() : NotFound();
         }
     }
