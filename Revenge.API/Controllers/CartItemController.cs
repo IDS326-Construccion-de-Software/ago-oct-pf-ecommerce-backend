@@ -9,31 +9,31 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
     [ApiController]
     public class CartItemController : ControllerBase
     {
-        private readonly ICartItemRepository _ICartItemRepository;
+        private readonly ICartItemRepository _CartItemRepository;
 
-        public CartItemController(ICartItemRepository ICartItemRepository)
+        public CartItemController(ICartItemRepository CartItemRepository)
         {
-            _ICartItemRepository = ICartItemRepository;
+            _CartItemRepository = CartItemRepository;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Cartitem>>> GetAll()
         {
-            var items = await _ICartItemRepository.GetAllAsync();
+            var items = await _CartItemRepository.GetAllAsync();
             return Ok(items);
         }
 
         [HttpGet("{id:guid}")]
         public async Task<ActionResult<Cartitem>> GetById(Guid id)
         {
-            var item = await _ICartItemRepository.GetByIdAsync(id);
+            var item = await _CartItemRepository.GetByIdAsync(id);
             return item == null ? NotFound() : Ok(item);
         }
 
         [HttpGet("cart/{cartId:guid}")]
         public async Task<ActionResult<IEnumerable<Cartitem>>> GetByCartId(Guid cartId)
         {
-            var items = await _ICartItemRepository.GetByCartIdAsync(cartId);
+            var items = await _CartItemRepository.GetByCartIdAsync(cartId);
             return Ok(items);
         }
 
@@ -43,7 +43,7 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
             item.Id = Guid.NewGuid();
             item.AddedAt = DateTime.UtcNow;
 
-            var result = await _ICartItemRepository.AddAsync(item);
+            var result = await _CartItemRepository.AddAsync(item);
             return result ? Ok(item) : BadRequest("Error creating cart item.");
         }
 
@@ -52,14 +52,14 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
         {
             if (id != item.Id) return BadRequest();
 
-            var result = await _ICartItemRepository.UpdateAsync(item);
+            var result = await _CartItemRepository.UpdateAsync(item);
             return result ? NoContent() : NotFound();
         }
 
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var result = await _ICartItemRepository.DeleteAsync(id);
+            var result = await _CartItemRepository.DeleteAsync(id);
             return result ? NoContent() : NotFound();
         }
     }
