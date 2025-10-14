@@ -5,11 +5,7 @@ namespace Revenge.Infrestructure.Repositories
 {
     public interface IAuthenticationRepository
     {
-        //Task<User?> LoginAuth0(
-        //    string token,
-        //    CancellationToken cancellationToken = default);
-
-        Task<User?> LoginUserAsync(
+        Task<AuthLoginResult?> LoginUserAsync(
             string email,
             string plainPassword,
             CancellationToken cancellationToken = default);
@@ -43,7 +39,7 @@ namespace Revenge.Infrestructure.Repositories
             string newPassword,
             CancellationToken cancellationToken = default);
 
-        Task<bool> ExistsAsync (
+        Task<bool> ExistsAsync(
             Guid id,
             CancellationToken cancellationToken = default
         );
