@@ -7,26 +7,14 @@ using System.Threading.Tasks;
 
 namespace Revenge.Infrestructure.Repositories
 {
-    /// Operaciones sobre la entidad Category.
     public interface ICategoryRepository
     {
-        Task<Category[]?> GetAllAsync(
-            CancellationToken cancellationToken = default
-            );
-        Task<Category?> GetByNameAsync(
-            string name, CancellationToken cancellationToken = default
-            );
-        Task<bool> AddAsync(
-            Category newCategory, CancellationToken cancellationToken = default
-            );
-        Task<bool> UpdateAsync(
-            Category category, CancellationToken cancellationToken = default
-            );
-        Task<bool> DeleteAsync(
-            Guid categoryId, CancellationToken cancellationToken = default
-            );
-        Task<bool> ExistsAsync(
-            Guid categoryId, CancellationToken cancellationToken = default
-            );
+        Task<Category[]?> GetAllAsync(CancellationToken cancellationToken = default);
+        Task<Category?> GetByNameAsync(string name, CancellationToken cancellationToken = default);
+        Task<bool> AddAsync(Category category, CancellationToken cancellationToken = default);
+        Task<bool> UpdateAsync(Category category, CancellationToken cancellationToken = default);
+        Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default);
+        Task<bool> ExistsAsync(Guid id, CancellationToken cancellationToken = default);
+        Task<Category?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
     }
 }
