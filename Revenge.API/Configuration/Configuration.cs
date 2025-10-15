@@ -18,6 +18,14 @@ namespace ago_oct_pf_ecommerce_backend.Configuration
             services.AddDbContext<RevengeDbContext>(options => options.UseNpgsql(connectionString));
 
             services.AddScoped<IAuthenticationRepository, AuthenticationRepository>();
+            services.AddScoped<IInvoiceRepository, InvoiceRepository>();
+            services.AddScoped<ICategoryRepository, CategoryRepository>();
+            services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped<IProductImageRepository, ProductImageRepository>();
+            services.AddScoped<IOrderRepository, OrderRepository>();
+            services.AddScoped<IShoppingcartRepository, ShoppingcartRepository>();
+            services.AddScoped<ICartItemRepository, CartItemRepository>();
+
         }
     }
 }
