@@ -1,4 +1,5 @@
 
+using Revenge.Core.Models;
 using Revenge.Infrestructure.Entities;
 
 
@@ -6,11 +7,11 @@ namespace Revenge.Infrestructure.Repositories
 {
   public interface IInvoiceRepository
   {
-    Task<Invoice[]> FindInvoicesByUserAsync(
+    Task<InvoiceDTO[]> FindInvoicesByUserAsync(
         Guid userId,
         CancellationToken cancellationToken = default);
 
-    Task<Invoice?> FindInvoiceByIdAsync(
+    Task<InvoiceDTO?> FindInvoiceByIdAsync(
       Guid invoiceId,
       CancellationToken cancellationToken = default);
 

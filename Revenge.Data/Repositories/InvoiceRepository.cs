@@ -1,5 +1,6 @@
 using System.Runtime.Intrinsics.Arm;
 using Microsoft.EntityFrameworkCore;
+using Revenge.Core.Models;
 using Revenge.Data.Context;
 using Revenge.Infrestructure.Entities;
 using Revenge.Infrestructure.Repositories;
@@ -15,17 +16,42 @@ namespace Revenge.Data.Repositories
             _context = context;
         }
 
-        public async Task<Invoice[]> FindInvoicesByUserAsync(Guid userId, CancellationToken cancellationToken = default)
+        public async Task<InvoiceDTO[]> FindInvoicesByUserAsync(Guid userId, CancellationToken cancellationToken = default)
         {
-            Invoice[] userInvoices = await _context.Invoices.Where(i => i.UserId == userId).ToArrayAsync(cancellationToken);
-            return userInvoices;
+            return await _context.Invoices
+                .Where(i => i.UserId == userId)
+                .AsNoTracking()
+                .Select(i => new InvoiceDTO
+                {
+                    Id = i.Id,
+                    OrderId = i.OrderId,
+                    UserId = i.UserId,
+                    IssuedAt = i.IssuedAt,
+                    Total = i.Total,
+                    Tax = i.Tax,
+                    Url = i.Url
+                })
+                .ToArrayAsync(cancellationToken);
         }
 
-        public async Task<Invoice?> FindInvoiceByIdAsync(Guid invoiceId, CancellationToken cancellationToken = default)
+        public async Task<InvoiceDTO?> FindInvoiceByIdAsync(Guid invoiceId, CancellationToken cancellationToken = default)
         {
-            Invoice? invoice = await _context.Invoices.FirstOrDefaultAsync(i => i.Id == invoiceId, cancellationToken);
-            return invoice;
+            return await _context.Invoices
+                .AsNoTracking()
+                .Where(i => i.Id == invoiceId)
+                .Select(i => new InvoiceDTO
+                {
+                    Id = i.Id,
+                    OrderId = i.OrderId,
+                    UserId = i.UserId,
+                    IssuedAt = i.IssuedAt,
+                    Total = i.Total,
+                    Tax = i.Tax,
+                    Url = i.Url
+                })
+                .FirstOrDefaultAsync(cancellationToken);
         }
+
 
         public async Task<bool> AddInvoiceAsync(Invoice newInvoice, CancellationToken cancellationToken = default)
         {

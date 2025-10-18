@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Humanizer;
 using Microsoft.AspNetCore.Mvc;
-using Revenge.Data.Models;
+using Revenge.Core.Models;
 using Revenge.Data.Repositories;
 using Revenge.Infrestructure.Entities;
 using Revenge.Infrestructure.Repositories;
@@ -36,7 +36,7 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
         {
             try
             {
-                Invoice[] invoices = await _invoiceRepository.FindInvoicesByUserAsync(userId);
+                InvoiceDTO[] invoices = await _invoiceRepository.FindInvoicesByUserAsync(userId);
                 if (invoices.Length < 1) return NotFound("");
                 return Ok(invoices);
             }
@@ -51,7 +51,7 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
         {
             try
             {
-                Invoice? invoice = await _invoiceRepository.FindInvoiceByIdAsync(id);
+                InvoiceDTO? invoice = await _invoiceRepository.FindInvoiceByIdAsync(id);
 
                 if (invoice == null) return NotFound("Esta factura no está registrada");
 
