@@ -1,6 +1,7 @@
 using System.Runtime.Intrinsics.Arm;
 using Microsoft.EntityFrameworkCore;
 using Revenge.Data.Context;
+using Revenge.Data.Models;
 using Revenge.Infrestructure.Entities;
 using Revenge.Infrestructure.Repositories;
 
@@ -15,13 +16,13 @@ namespace Revenge.Data.Repositories
             _context = context;
         }
 
-        public async Task<Invoice[]> FindInvoicesByUserAsync(Guid userId, CancellationToken cancellationToken = default)
+        public async Task<InvoiceDTO[]> FindInvoicesByUserAsync(Guid userId, CancellationToken cancellationToken = default)
         {
             Invoice[] userInvoices = await _context.Invoices.Where(i => i.UserId == userId).ToArrayAsync(cancellationToken);
             return userInvoices;
         }
 
-        public async Task<Invoice?> FindInvoiceByIdAsync(Guid invoiceId, CancellationToken cancellationToken = default)
+        public async Task<InvoiceDTO?> FindInvoiceByIdAsync(Guid invoiceId, CancellationToken cancellationToken = default)
         {
             Invoice? invoice = await _context.Invoices.FirstOrDefaultAsync(i => i.Id == invoiceId, cancellationToken);
             return invoice;

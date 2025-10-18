@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Revenge.Core.Models
 {
-    internal class InvoiceDto
+    internal class OrderDTO
     {
         public Guid Id { get; set; }
         public Guid UserId { get; set; }
