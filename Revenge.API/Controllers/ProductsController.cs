@@ -55,19 +55,27 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddProduct([FromBody] Product newProduct, CancellationToken cancellationToken)
+        public async Task<IActionResult> AddProduct([FromBody] CreateProductDTO dto, CancellationToken cancellationToken)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             try
             {
-                var categoryExists = await _categoryRepository.ExistsAsync(newProduct.CategoryId, cancellationToken);
+                bool categoryExists = await _categoryRepository.ExistsAsync(dto.CategoryId, cancellationToken);
                 if (!categoryExists)
                     return NotFound("La categoría asociada no existe.");
 
-                newProduct.Id = Guid.NewGuid();
-                newProduct.CreatedAt = DateTime.UtcNow;
+                var newProduct = new Product
+                {
+                    Id = Guid.NewGuid(),
+                    Name = dto.Name,
+                    Description = dto.Description,
+                    Price = dto.Price,
+                    Brand = dto.Brand,
+                    CategoryId = dto.CategoryId,
+                    CreatedAt = DateTime.UtcNow
+                };
 
                 await _productRepository.AddAsync(newProduct, cancellationToken);
 
@@ -87,9 +95,11 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
 
             try
             {
-                var exists = await _productRepository.ExistsAsync(id, cancellationToken);
+                bool exists = await _productRepository.ExistsAsync(id, cancellationToken);
                 if (!exists)
                     return NotFound("El producto no existe.");
+
+                updatedProduct.UpdatedAt = DateTime.UtcNow;
 
                 await _productRepository.UpdateAsync(updatedProduct, cancellationToken);
                 return NoContent();
@@ -105,7 +115,7 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
         {
             try
             {
-                var deleted = await _productRepository.DeleteAsync(id, cancellationToken);
+                bool deleted = await _productRepository.DeleteAsync(id, cancellationToken);
                 if (!deleted)
                     return NotFound("No se encontró ningún producto con el ID indicado para eliminar.");
 
