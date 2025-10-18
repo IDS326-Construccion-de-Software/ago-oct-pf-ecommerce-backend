@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Humanizer;
 using Microsoft.AspNetCore.Mvc;
 using Revenge.Core.Models;
-using Revenge.Data.Models;
 using Revenge.Data.Repositories;
 using Revenge.Infrestructure.Entities;
 using Revenge.Infrestructure.Repositories;
