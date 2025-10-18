@@ -61,6 +61,21 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
                     }
                 };
                 var auth0User = await client.Users.CreateAsync(userRequest);
+
+                if (auth0User != null)
+                {
+                    await _authenticationRepository.AddUserAsync(new Infrestructure.Entities.User
+                    {
+                        Id = new Guid(),
+                        Email = registerUserDTO.Email,
+                        Name = registerUserDTO.Name,
+                        Cellphone = registerUserDTO.Cellphone,
+                        CreatedAt = DateTime.UtcNow,
+                        Password = auth0User.Identities[0].UserId.ToString(),
+
+                    }, cancellationToken);
+                }
+
                 return CreatedAtAction(
                     nameof(Register),
                     new { id = auth0User.UserId },
@@ -73,35 +88,6 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
                         createdAt = auth0User.CreatedAt
                     }
                 );
-                // No se pueda implementar esta parte hasta que se de la creacion de UserProfile en la BD
-                // var user = new User
-                // {
-                //     Id = Guid.NewGuid(),
-                //     Auth0UserId = auth0User.UserId,
-                //     Name = registerUserDTO.Name,
-                //     Email = registerUserDTO.Email,
-                //     Password = null, // NO guardar contraseña
-                //     Cellphone = registerUserDTO.Cellphone,
-                //     Birthdate = registerUserDTO.Birthdate.HasValue 
-                //         ? DateOnly.FromDateTime(registerUserDTO.Birthdate.Value.ToDateTime(TimeOnly.MinValue))
-                //         : null,
-                //     Directions = registerUserDTO.Directions != null 
-                //         ? JsonSerializer.Serialize(registerUserDTO.Directions) 
-                //         : null,
-                //     NumIdentification = registerUserDTO.NumIdentification,
-                //     CreatedAt = DateTime.UtcNow,
-                //     UpdatedAt = DateTime.UtcNow
-                // };
-                // var saved = _authenticationRepository.
-
-                // if (!result)
-                //     return StatusCode(500, "Error al registrar usuario");
-
-                // return CreatedAtAction(
-                //     nameof(Register),
-                //     new { id = user.Id },
-                //     new { message = "Usuario registrado exitosamente", userID = user.Id }
-                // );
             }
             catch (Auth0.Core.Exceptions.ApiException ex)
             {
@@ -129,10 +115,10 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
             {
                 var token = await GetAuth0TokenAsync();
                 var domain = _configuration["Auth0:Domain"];
-                
-                return Ok(new 
-                { 
-                    message = "Conexión exitosa con Auth0", 
+
+                return Ok(new
+                {
+                    message = "Conexión exitosa con Auth0",
                     hasToken = !string.IsNullOrEmpty(token),
                     domain = domain,
                     tokenPreview = token?.Substring(0, Math.Min(20, token.Length)) + "..."
@@ -144,7 +130,6 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
             }
         }
 
-        // funcionamiento parcial
         [HttpPost("login")]
         public async Task<ActionResult> Login([FromBody] LoginUserDTO loginUserDTO, CancellationToken cancellationToken)
         {
@@ -153,30 +138,33 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
 
             try
             {
-                var user = await _authenticationRepository.LoginUserAsync(
+                var result = await _authenticationRepository.LoginUserAsync(
                     email: loginUserDTO.Email,
                     plainPassword: loginUserDTO.Password,
-                    cancellationToken: cancellationToken
-                    );
+                    cancellationToken: cancellationToken);
 
-                if (user is null)
-                    return Unauthorized(new { mensaje = "Credenciales inválidas" });
-                else
+                if (result is null)
+                    return Unauthorized(new { message = "Credenciales inválidas o usuario no verificado." });
+
+                return Ok(new
                 {
-                    return Ok(new
+                    message = "Login exitoso",
+                    tokens = new
                     {
-                        mensaje = "Login exitoso",
-                        user = new { user.Id, user.Name, user.Email }
-                    });
-                }
+                        access_token = result.AccessToken,
+                        id_token = result.IdToken,
+                        token_type = result.TokenType,
+                        expires_in = result.ExpiresIn
+                    }
+                });
             }
             catch (OperationCanceledException)
             {
-                return StatusCode(499, "Solicitud cancelada por el cliente");
+                return StatusCode(499, new { message = "Solicitud cancelada" });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return StatusCode(500, "Error interno del servidor");
+                return StatusCode(500, new { message = $"Error interno: {ex.Message}" });
             }
         }
         private async Task<string> GetAuth0TokenAsync()
@@ -201,14 +189,5 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
             var tokenData = await response.Content.ReadFromJsonAsync<JsonElement>();
             return tokenData.GetProperty("access_token").GetString()!;
         }
-
-        //[HttpPost("auth0Login")]
-        //public async Task<IActionResult> Auth0Login([FromBody] LoginUserDTO auth0Login, CancellationToken cancellationToken)
-        //{
-        //    if (!ModelState.IsValid)
-        //        return BadRequest(ModelState);
-
-        //    return 0;
-        //}
     }
 }

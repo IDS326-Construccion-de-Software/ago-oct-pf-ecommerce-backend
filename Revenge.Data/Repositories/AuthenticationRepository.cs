@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Revenge.Data.Context;
 using Revenge.Data.Models;
 using Revenge.Infrestructure.Entities;
@@ -7,7 +8,10 @@ using Revenge.Infrestructure.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Json;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -16,10 +20,14 @@ namespace Revenge.Data.Repositories
     public class AuthenticationRepository : IAuthenticationRepository
     {
         private readonly RevengeDbContext _context;
+        private readonly IConfiguration _configuration;
+        private readonly HttpClient _httpClient;
 
-        public AuthenticationRepository(RevengeDbContext context)
+        public AuthenticationRepository(RevengeDbContext context, IConfiguration configuration, HttpClient httpClient)
         {
             _context = context;
+            _configuration = configuration;
+            _httpClient = httpClient;
         }
 
         public async Task<bool> AddUserAsync(User newUser, CancellationToken cancellationToken = default)
@@ -38,8 +46,9 @@ namespace Revenge.Data.Repositories
                 return result > 0;
 
             }
-            catch
+            catch(Exception e)
             {
+                Console.WriteLine(e.Message);
                 return false;
             }
         }
@@ -49,15 +58,50 @@ namespace Revenge.Data.Repositories
             throw new NotImplementedException();
         }
 
-        public async Task<User?> LoginUserAsync(string email, string plainPassword, CancellationToken ct = default)
+        public async Task<AuthLoginResult?> LoginUserAsync(string email, string plainPassword, CancellationToken cancellationToken = default)
         {
-            var user = await _context.Users
-            .AsNoTracking()
-            .FirstOrDefaultAsync(c => c.Email == email, ct);
+            var domain = _configuration["Auth0:Domain"];
+            var clientId = _configuration["Auth0:ClientId"];
+            var clientSecret = _configuration["Auth0:ClientSecret"];
+            var audience = _configuration["Auth0:Audience"]; // opcional si necesitas token para tu API
 
-            if (user is null) return null;
+            var tokenRequest = new
+            {
+                grant_type = "password",
+                username = email,
+                password = plainPassword,
+                client_id = clientId,
+                client_secret = clientSecret,
+                audience = audience,
+                scope = "openid profile email"
+            };
 
-            return null; // Password incorrecto
+            var resp = await _httpClient.PostAsJsonAsync(
+                $"https://{domain}/oauth/token",
+                tokenRequest,
+                cancellationToken);
+
+            var raw = await resp.Content.ReadAsStringAsync(cancellationToken);
+
+            if (!resp.IsSuccessStatusCode)
+            {
+                // Auth0 devuelve invalid_grant para credenciales erróneas o email no verificado
+                if (raw.Contains("invalid_grant", StringComparison.OrdinalIgnoreCase))
+                    return null;
+
+                throw new Exception($"Auth0 error: {raw}");
+            }
+
+            using var doc = JsonDocument.Parse(raw);
+            var root = doc.RootElement;
+
+            return new AuthLoginResult
+            {
+                AccessToken = root.GetProperty("access_token").GetString()!,
+                IdToken = root.TryGetProperty("id_token", out var idt) ? idt.GetString() : null,
+                TokenType = root.GetProperty("token_type").GetString()!,
+                ExpiresIn = root.GetProperty("expires_in").GetInt32()
+            };
         }
 
         public Task<bool> LogoutUserAsync(Guid userId, CancellationToken cancellationToken = default)
@@ -80,7 +124,7 @@ namespace Revenge.Data.Repositories
             throw new NotImplementedException();
         }
         // ===== MÉTODOS NUEVOS PARA AUTH0 (Por implementar) =====
-        
+
         // public async Task<bool> SaveUserProfileAsync(User user, CancellationToken cancellationToken)
         // {
         //     try
@@ -113,7 +157,7 @@ namespace Revenge.Data.Repositories
         // {
         //     return await _context.Users.AnyAsync(u => u.Email == email, cancellationToken);
         // }
-        
+
         public async Task<bool> ExistsAsync(Guid userId, CancellationToken cancellationToken = default)
         {
             return await _context.Users.AnyAsync(u => u.Id == userId, cancellationToken);
