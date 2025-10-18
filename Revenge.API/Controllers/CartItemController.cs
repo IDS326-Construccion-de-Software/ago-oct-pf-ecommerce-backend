@@ -23,14 +23,14 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
             return Ok(items);
         }
 
-        [HttpGet("{id:guid}")]
+        [HttpGet("{id}")]
         public async Task<ActionResult<Cartitem>> GetById(Guid id)
         {
             var item = await _CartItemRepository.GetByIdAsync(id);
             return item == null ? NotFound() : Ok(item);
         }
 
-        [HttpGet("cart/{cartId:guid}")]
+        [HttpGet("cart/{cartId}")]
         public async Task<ActionResult<IEnumerable<Cartitem>>> GetByCartId(Guid cartId)
         {
             var items = await _CartItemRepository.GetByCartIdAsync(cartId);
@@ -47,7 +47,7 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
             return result ? Ok(item) : BadRequest("Error creating cart item.");
         }
 
-        [HttpPut("{id:guid}")]
+        [HttpPut("{id}")]
         public async Task<IActionResult> Update(Guid id, [FromBody] Cartitem item)
         {
             if (id != item.Id) return BadRequest();
@@ -56,7 +56,7 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
             return result ? NoContent() : NotFound();
         }
 
-        [HttpDelete("{id:guid}")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
             var result = await _CartItemRepository.DeleteAsync(id);
