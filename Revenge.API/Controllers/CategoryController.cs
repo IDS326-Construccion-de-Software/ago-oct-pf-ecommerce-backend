@@ -1,12 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Revenge.Data.Context;
+﻿using Microsoft.AspNetCore.Mvc;
 using Revenge.Infrestructure.Entities;
 using Revenge.Infrestructure.Repositories;
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
@@ -23,47 +20,63 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Category>>> GetCategories()
+        public async Task<ActionResult<IEnumerable<Category>>> GetCategories(CancellationToken cancellationToken)
         {
-            var result = await _categoryRepository.GetAllAsync();
-            return Ok(result);
+            var categories = await _categoryRepository.GetAllAsync(cancellationToken);
+            if (categories == null || categories.Length == 0)
+                return NotFound("No se encontraron categorías registradas.");
+
+            return Ok(categories);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Category>> GetCategory(Guid id)
+        public async Task<ActionResult<Category>> GetCategory(Guid id, CancellationToken cancellationToken)
         {
-            var category = await _categoryRepository.GetByIdAsync(id);
-            return category == null ? NotFound() : Ok(category);
+            var category = await _categoryRepository.GetByIdAsync(id, cancellationToken);
+            if (category == null)
+                return NotFound($"No se encontró ninguna categoría con el ID: {id}.");
+
+            return Ok(category);
         }
 
         [HttpPost]
-        public async Task<ActionResult<Category>> PostCategory(Category category)
+        public async Task<ActionResult<Category>> PostCategory(Category category, CancellationToken cancellationToken)
         {
             category.Id = Guid.NewGuid();
             category.CreatedAt = DateTime.UtcNow;
-            var success = await _categoryRepository.AddAsync(category);
 
+            var success = await _categoryRepository.AddAsync(category, cancellationToken);
             if (!success)
-                return BadRequest("Category could not be created.");
+                return BadRequest("No se pudo crear la categoría.");
 
             return CreatedAtAction(nameof(GetCategory), new { id = category.Id }, category);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCategory(Guid id, Category category)
+        public async Task<IActionResult> PutCategory(Guid id, Category category, CancellationToken cancellationToken)
         {
             if (id != category.Id)
-                return BadRequest("ID mismatch.");
+                return BadRequest("El ID no coincide con la categoría enviada.");
 
-            var success = await _categoryRepository.UpdateAsync(category);
-            return success ? NoContent() : NotFound();
+            var exists = await _categoryRepository.ExistsAsync(id, cancellationToken);
+            if (!exists)
+                return NotFound($"No existe una categoría con el ID: {id}.");
+
+            var success = await _categoryRepository.UpdateAsync(category, cancellationToken);
+            if (!success)
+                return BadRequest("Error al actualizar la categoría.");
+
+            return NoContent();
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCategory(Guid id)
+        public async Task<IActionResult> DeleteCategory(Guid id, CancellationToken cancellationToken)
         {
-            var success = await _categoryRepository.DeleteAsync(id);
-            return success ? NoContent() : NotFound();
+            var success = await _categoryRepository.DeleteAsync(id, cancellationToken);
+            if (!success)
+                return NotFound($"No se encontró ninguna categoría con el ID: {id} para eliminar.");
+
+            return NoContent();
         }
     }
 }
