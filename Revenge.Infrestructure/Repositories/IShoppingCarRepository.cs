@@ -3,29 +3,30 @@ using Revenge.Infrestructure.Entities;
 
 namespace Revenge.Infrestructure.Repositories
 {
-    public interface IProductRepository
+    public interface IShoppingcartRepository
     {
-        Task<ProductDTO[]> FindAllAsync(
+        Task<ShoppingCartDTO[]> FindCartsByUserAsync(
+            Guid userId,
             CancellationToken cancellationToken = default);
 
-        Task<ProductDTO?> FindByIdAsync(
-            Guid productId,
+        Task<ShoppingCartDTO?> FindCartByIdAsync(
+            Guid cartId,
             CancellationToken cancellationToken = default);
 
-        Task<bool> AddAsync(
-            Product newProduct,
+        Task<bool> AddCartAsync(
+            Shoppingcart newCart,
             CancellationToken cancellationToken = default);
 
-        Task<bool> UpdateAsync(
-            Product updatedProduct,
+        Task<bool> UpdateCartAsync(
+            Shoppingcart updatedCart,
             CancellationToken cancellationToken = default);
 
-        Task<bool> DeleteAsync(
-            Guid productId,
+        Task<bool> DeleteCartAsync(
+            Guid cartId,
             CancellationToken cancellationToken = default);
 
         Task<bool> ExistsAsync(
-            Guid productId,
+            Guid cartId,
             CancellationToken cancellationToken = default);
     }
 }

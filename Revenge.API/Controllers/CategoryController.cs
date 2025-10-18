@@ -1,12 +1,11 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using Revenge.Core.Models;
+using Revenge.Infrestructure.Repositories;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Revenge.Data.Context;
-using Revenge.Infrestructure.Entities;
 
 namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
 {
@@ -14,97 +13,70 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
     [ApiController]
     public class CategoryController : ControllerBase
     {
-        private readonly RevengeDbContext _context;
+        private readonly ICategoryRepository _categoryRepository;
 
-        public CategoryController(RevengeDbContext context)
+        public CategoryController(ICategoryRepository categoryRepository)
         {
-            _context = context;
+            _categoryRepository = categoryRepository;
         }
 
-        // GET: api/category
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Category>>> GetCategories()
+        public async Task<ActionResult<IEnumerable<CategoryDTO>>> GetCategories(CancellationToken cancellationToken)
         {
-            return await _context.Categories.ToListAsync();
+            var categories = await _categoryRepository.GetAllAsync(cancellationToken);
+            if (categories == null || !categories.Any())
+                return NotFound("No se encontraron categorías registradas.");
+
+            return Ok(categories);
         }
 
-        // GET: api/category/{id}
         [HttpGet("{id}")]
-        public async Task<ActionResult<Category>> GetCategory(Guid id)
+        public async Task<ActionResult<CategoryDTO>> GetCategory(Guid id, CancellationToken cancellationToken)
         {
-            var category = await _context.Categories.FindAsync(id);
-
+            var category = await _categoryRepository.GetByIdAsync(id, cancellationToken);
             if (category == null)
-            {
-                return NotFound();
-            }
+                return NotFound($"No se encontró ninguna categoría con el ID: {id}.");
 
-            return category;
+            return Ok(category);
         }
 
-        // PUT: api/category/{id}
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutCategory(Guid id, Category category)
-        {
-            if (id != category.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(category).State = EntityState.Modified;
-            category.UpdatedAt = DateTime.UtcNow;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CategoryExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/category
         [HttpPost]
-        public async Task<ActionResult<Category>> PostCategory(Category category)
+        public async Task<ActionResult<CategoryDTO>> PostCategory(CategoryDTO category, CancellationToken cancellationToken)
         {
             category.Id = Guid.NewGuid();
-            category.CreatedAt = DateTime.UtcNow;
+            var success = await _categoryRepository.AddAsync(category, cancellationToken);
 
-            _context.Categories.Add(category);
-            await _context.SaveChangesAsync();
+            if (!success)
+                return BadRequest("No se pudo crear la categoría.");
 
             return CreatedAtAction(nameof(GetCategory), new { id = category.Id }, category);
         }
 
-        // DELETE: api/category/{id}
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCategory(Guid id)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutCategory(Guid id, CategoryDTO category, CancellationToken cancellationToken)
         {
-            var category = await _context.Categories.FindAsync(id);
-            if (category == null)
-            {
-                return NotFound();
-            }
+            if (id != category.Id)
+                return BadRequest("El ID no coincide con la categoría enviada.");
 
-            _context.Categories.Remove(category);
-            await _context.SaveChangesAsync();
+            var exists = await _categoryRepository.ExistsAsync(id, cancellationToken);
+            if (!exists)
+                return NotFound($"No existe una categoría con el ID: {id}.");
+
+            var success = await _categoryRepository.UpdateAsync(category, cancellationToken);
+            if (!success)
+                return BadRequest("Error al actualizar la categoría.");
 
             return NoContent();
         }
 
-        private bool CategoryExists(Guid id)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteCategory(Guid id, CancellationToken cancellationToken)
         {
-            return _context.Categories.Any(e => e.Id == id);
+            var success = await _categoryRepository.DeleteAsync(id, cancellationToken);
+            if (!success)
+                return NotFound($"No se encontró ninguna categoría con el ID: {id} para eliminar.");
+
+            return NoContent();
         }
     }
 }

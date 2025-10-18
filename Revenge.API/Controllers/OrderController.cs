@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Revenge.Data.Context;
 using Revenge.Infrestructure.Entities;
+using Revenge.Infrestructure.Repositories;
 
 namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
 {
@@ -13,71 +11,45 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
     [ApiController]
     public class OrderController : ControllerBase
     {
-        private readonly RevengeDbContext _context;
+        private readonly IOrderRepository _orderRepository;
 
-        public OrderController(RevengeDbContext context)
+        public OrderController(IOrderRepository orderRepository)
         {
-            _context = context;
+            _orderRepository = orderRepository;
         }
 
         // GET: api/order
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Order>>> GetOrders()
         {
-            return await _context.Orders
-                .Include(o => o.User)
-                .Include(o => o.Orderitems)
-                .Include(o => o.Payments)
-                .Include(o => o.Invoices)
-                .ToListAsync();
+            var orders = await _orderRepository.GetAllAsync();
+            if (orders == null || orders.Length == 0)
+                return NotFound("No se encontraron órdenes registradas.");
+
+            return Ok(orders);
         }
 
-        // GET: api/order/5
+        // GET: api/order/{id}
         [HttpGet("{id}")]
         public async Task<ActionResult<Order>> GetOrder(Guid id)
         {
-            var order = await _context.Orders
-                .Include(o => o.User)
-                .Include(o => o.Orderitems)
-                .Include(o => o.Payments)
-                .Include(o => o.Invoices)
-                .FirstOrDefaultAsync(o => o.Id == id);
-
+            var order = await _orderRepository.GetByIdAsync(id);
             if (order == null)
-            {
-                return NotFound();
-            }
+                return NotFound($"No se encontró ninguna orden con el ID: {id}.");
 
-            return order;
+            return Ok(order);
         }
 
-        // PUT: api/order/5
+        // PUT: api/order/{id}
         [HttpPut("{id}")]
         public async Task<IActionResult> PutOrder(Guid id, Order order)
         {
             if (id != order.Id)
-            {
-                return BadRequest();
-            }
+                return BadRequest("El ID no coincide con la orden enviada.");
 
-            _context.Entry(order).State = EntityState.Modified;
-            order.UpdatedAt = DateTime.UtcNow;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!OrderExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            var updated = await _orderRepository.UpdateAsync(order);
+            if (!updated)
+                return NotFound($"No existe una orden con el ID: {id} para actualizar.");
 
             return NoContent();
         }
@@ -87,31 +59,23 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
         public async Task<ActionResult<Order>> PostOrder(Order order)
         {
             order.PlacedAt = DateTime.UtcNow;
-            _context.Orders.Add(order);
-            await _context.SaveChangesAsync();
+            var added = await _orderRepository.AddAsync(order);
 
-            return CreatedAtAction("GetOrder", new { id = order.Id }, order);
+            if (!added)
+                return BadRequest("No se pudo crear la orden.");
+
+            return CreatedAtAction(nameof(GetOrder), new { id = order.Id }, order);
         }
 
-        // DELETE: api/order/5
+        // DELETE: api/order/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteOrder(Guid id)
         {
-            var order = await _context.Orders.FindAsync(id);
-            if (order == null)
-            {
-                return NotFound();
-            }
-
-            _context.Orders.Remove(order);
-            await _context.SaveChangesAsync();
+            var deleted = await _orderRepository.DeleteAsync(id);
+            if (!deleted)
+                return NotFound($"No se encontró ninguna orden con el ID: {id} para eliminar.");
 
             return NoContent();
-        }
-
-        private bool OrderExists(Guid id)
-        {
-            return _context.Orders.Any(e => e.Id == id);
         }
     }
 }

@@ -1,108 +1,130 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Revenge.Data.Context;
+using Revenge.Core.Models;
 using Revenge.Infrestructure.Entities;
+using Revenge.Infrestructure.Repositories;
 
 namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
 {
     [Route("api/product")]
     [ApiController]
-    public class ProductsController : ControllerBase
+    public class ProductController : ControllerBase
     {
-        private readonly RevengeDbContext _context;
+        private readonly IProductRepository _productRepository;
+        private readonly ICategoryRepository _categoryRepository;
 
-        public ProductsController(RevengeDbContext context)
+        public ProductController(
+            IProductRepository productRepository,
+            ICategoryRepository categoryRepository)
         {
-            _context = context;
+            _productRepository = productRepository;
+            _categoryRepository = categoryRepository;
         }
 
-        // GET: api/Products
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
+        public async Task<ActionResult<ProductDTO[]>> GetAll(CancellationToken cancellationToken)
         {
-            return await _context.Products.ToListAsync();
+            try
+            {
+                var products = await _productRepository.FindAllAsync(cancellationToken);
+                if (products.Length == 0)
+                    return NotFound("No se encontraron productos registrados.");
+
+                return Ok(products);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Error interno del servidor");
+            }
         }
 
-        // GET: api/Products/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Product>> GetProduct(Guid id)
+        public async Task<ActionResult<ProductDTO>> GetById(Guid id, CancellationToken cancellationToken)
         {
-            var product = await _context.Products.FindAsync(id);
-
-            if (product == null)
+            try
             {
-                return NotFound();
-            }
+                var product = await _productRepository.FindByIdAsync(id, cancellationToken);
+                if (product == null)
+                    return NotFound($"No se encontró ningún producto con el ID: {id}.");
 
-            return product;
+                return Ok(product);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Error interno del servidor");
+            }
         }
 
-        // PUT: api/Products/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutProduct(Guid id, Product product)
+        [HttpPost]
+        public async Task<IActionResult> AddProduct([FromBody] CreateProductDTO dto, CancellationToken cancellationToken)
         {
-            if (id != product.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(product).State = EntityState.Modified;
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
             try
             {
-                await _context.SaveChangesAsync();
+                bool categoryExists = await _categoryRepository.ExistsAsync(dto.CategoryId, cancellationToken);
+                if (!categoryExists)
+                    return NotFound("La categoría asociada no existe.");
+
+                var newProduct = new Product
+                {
+                    Id = Guid.NewGuid(),
+                    Name = dto.Name,
+                    Description = dto.Description,
+                    Price = dto.Price,
+                    Brand = dto.Brand,
+                    CategoryId = dto.CategoryId,
+                    CreatedAt = DateTime.UtcNow
+                };
+
+                await _productRepository.AddAsync(newProduct, cancellationToken);
+
+                return CreatedAtAction(nameof(GetById), new { id = newProduct.Id }, newProduct);
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception)
             {
-                if (!ProductExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return StatusCode(500, "Error interno del servidor");
             }
-
-            return NoContent();
         }
 
-        // POST: api/Products
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Product>> PostProduct(Product product)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateProduct(Guid id, [FromBody] Product updatedProduct, CancellationToken cancellationToken)
         {
-            _context.Products.Add(product);
-            await _context.SaveChangesAsync();
+            if (id != updatedProduct.Id)
+                return BadRequest("El ID no coincide con el producto enviado.");
 
-            return CreatedAtAction("GetProduct", new { id = product.Id }, product);
+            try
+            {
+                bool exists = await _productRepository.ExistsAsync(id, cancellationToken);
+                if (!exists)
+                    return NotFound("El producto no existe.");
+
+                updatedProduct.UpdatedAt = DateTime.UtcNow;
+
+                await _productRepository.UpdateAsync(updatedProduct, cancellationToken);
+                return NoContent();
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Error interno del servidor");
+            }
         }
 
-        // DELETE: api/Products/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteProduct(Guid id)
+        public async Task<IActionResult> DeleteProduct(Guid id, CancellationToken cancellationToken)
         {
-            var product = await _context.Products.FindAsync(id);
-            if (product == null)
+            try
             {
-                return NotFound();
+                bool deleted = await _productRepository.DeleteAsync(id, cancellationToken);
+                if (!deleted)
+                    return NotFound("No se encontró ningún producto con el ID indicado para eliminar.");
+
+                return Ok();
             }
-
-            _context.Products.Remove(product);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool ProductExists(Guid id)
-        {
-            return _context.Products.Any(e => e.Id == id);
+            catch (Exception)
+            {
+                return StatusCode(500, "Error interno del servidor");
+            }
         }
     }
 }
