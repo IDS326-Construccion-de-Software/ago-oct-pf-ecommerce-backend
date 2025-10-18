@@ -2,12 +2,12 @@
 using Microsoft.AspNetCore.Mvc;
 using NuGet.Protocol.Plugins;
 using Revenge.Data.Context;
-using Revenge.Data.Models;
 using Revenge.Infrestructure.Entities;
 using Revenge.Infrestructure.Repositories;
 using Auth0.ManagementApi;
 using System.Text.Json;
 using Auth0.ManagementApi.Models;
+using Revenge.Core.Models;
 
 namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
 {
