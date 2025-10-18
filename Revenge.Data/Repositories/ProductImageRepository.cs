@@ -18,25 +18,25 @@ namespace Revenge.Infrestructure.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<Productimage>> GetAllAsync(CancellationToken cancellationToken)
+        public async Task<IEnumerable<Productimage>> GetAllAsync(CancellationToken cancellationToken = default)
         {
             return await _context.Productimages
                 .Include(p => p.Product)
                 .ToListAsync(cancellationToken);
         }
 
-        public async Task<Productimage?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+        public async Task<Productimage?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             return await _context.Productimages.FindAsync(new object[] { id }, cancellationToken);
         }
 
-        public async Task<Productimage?> GetPrimaryByProductIdAsync(Guid productId, CancellationToken cancellationToken)
+        public async Task<Productimage?> GetPrimaryByProductIdAsync(Guid productId, CancellationToken cancellationToken = default)
         {
             return await _context.Productimages
                 .FirstOrDefaultAsync(p => p.ProductId == productId && p.IsPrimary, cancellationToken);
         }
 
-        public async Task<Productimage> AddAsync(Productimage image, CancellationToken cancellationToken)
+        public async Task<Productimage> AddAsync(Productimage image, CancellationToken cancellationToken = default)
         {
             // Verifica que el producto exista
             var productExists = await _context.Products.AnyAsync(p => p.Id == image.ProductId, cancellationToken);
@@ -61,7 +61,7 @@ namespace Revenge.Infrestructure.Repositories
             return image;
         }
 
-        public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken)
+        public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
         {
             var image = await _context.Productimages.FindAsync(new object[] { id }, cancellationToken);
             if (image == null)
