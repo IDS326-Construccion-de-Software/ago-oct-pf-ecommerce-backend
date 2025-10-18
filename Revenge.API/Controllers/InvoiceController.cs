@@ -88,7 +88,7 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
                     Total = createInvoiceDTO.Total,
                     Url = createInvoiceDTO.Url,
                 };
-
+                
                 await _invoiceRepository.AddInvoiceAsync(newInvoice);
 
                 return CreatedAtAction(

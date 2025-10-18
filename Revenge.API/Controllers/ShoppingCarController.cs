@@ -51,22 +51,26 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddCart([FromBody] Shoppingcart cart)
+        public async Task<IActionResult> AddCart([FromBody] CreateShoppingCartDTO dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             try
             {
-                bool validUser = await _authenticationRepository.ExistsAsync(cart.UserId);
+                bool validUser = await _authenticationRepository.ExistsAsync(dto.UserId);
                 if (!validUser) return NotFound("Usuario no registrado.");
 
-                cart.Id = Guid.NewGuid();
-                cart.CreatedAt = DateTime.UtcNow;
+                var newCart = new Shoppingcart
+                {
+                    Id = Guid.NewGuid(),
+                    UserId = dto.UserId,
+                    CreatedAt = DateTime.UtcNow
+                };
 
-                await _shoppingcartRepository.AddCartAsync(cart);
+                await _shoppingcartRepository.AddCartAsync(newCart);
 
-                return CreatedAtAction(nameof(GetCartById), new { id = cart.Id }, new { CartId = cart.Id });
+                return CreatedAtAction(nameof(GetCartById), new { id = newCart.Id }, new { CartId = newCart.Id });
             }
             catch (Exception)
             {
@@ -85,6 +89,8 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
                 var exists = await _shoppingcartRepository.ExistsAsync(id);
                 if (!exists)
                     return NotFound("El carrito no existe.");
+
+                cart.UpdatedAt = DateTime.UtcNow;
 
                 await _shoppingcartRepository.UpdateCartAsync(cart);
                 return NoContent();
