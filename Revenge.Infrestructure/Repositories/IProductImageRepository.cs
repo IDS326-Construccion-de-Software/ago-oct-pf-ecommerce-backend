@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Revenge.Core.Models;
-using Revenge.Infrestructure.Entities;
 
 namespace Revenge.Infrestructure.Repositories
 {

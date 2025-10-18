@@ -1,92 +1,113 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Revenge.Core.Models;
 using Revenge.Infrestructure.Entities;
 using Revenge.Infrestructure.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
 {
     [Route("api/cart")]
     [ApiController]
-    public class ShoppingCarController : ControllerBase
+    public class ShoppingCartController : ControllerBase
     {
         private readonly IShoppingcartRepository _shoppingcartRepository;
+        private readonly IAuthenticationRepository _authenticationRepository;
 
-        public ShoppingCarController(IShoppingcartRepository shoppingcartRepository)
+        public ShoppingCartController(
+            IShoppingcartRepository shoppingcartRepository,
+            IAuthenticationRepository authenticationRepository)
         {
             _shoppingcartRepository = shoppingcartRepository;
-        }
-
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Shoppingcart>>> GetAll()
-        {
-            var carts = await _shoppingcartRepository.GetAllAsync();
-            if (carts == null || !carts.Any())
-                return NotFound("No se encontraron carritos registrados.");
-
-            return Ok(carts);
-        }
-
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Shoppingcart>> GetById(Guid id)
-        {
-            var cart = await _shoppingcartRepository.GetByIdAsync(id);
-            if (cart == null)
-                return NotFound($"No se encontró ningún carrito con el ID: {id}.");
-
-            return Ok(cart);
+            _authenticationRepository = authenticationRepository;
         }
 
         [HttpGet("user/{userId}")]
-        public async Task<ActionResult<Shoppingcart>> GetByUserId(Guid userId)
+        public async Task<ActionResult<ShoppingCartDTO[]>> GetCartsByUser(Guid userId)
         {
-            var cart = await _shoppingcartRepository.GetByUserIdAsync(userId);
-            if (cart == null)
-                return NotFound($"No se encontró ningún carrito asociado al usuario con ID: {userId}.");
+            try
+            {
+                var carts = await _shoppingcartRepository.FindCartsByUserAsync(userId);
+                if (carts.Length < 1) return NotFound("No se encontraron carritos para este usuario.");
+                return Ok(carts);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Error interno del servidor");
+            }
+        }
 
-            return Ok(cart);
+        [HttpGet("{id}")]
+        public async Task<ActionResult<ShoppingCartDTO>> GetCartById(Guid id)
+        {
+            try
+            {
+                var cart = await _shoppingcartRepository.FindCartByIdAsync(id);
+                if (cart == null) return NotFound("Carrito no encontrado.");
+                return Ok(cart);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Error interno del servidor");
+            }
         }
 
         [HttpPost]
-        public async Task<ActionResult> Create([FromBody] Shoppingcart cart)
+        public async Task<IActionResult> AddCart([FromBody] Shoppingcart cart)
         {
-            cart.Id = Guid.NewGuid();
-            cart.CreatedAt = DateTime.UtcNow;
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            var result = await _shoppingcartRepository.AddAsync(cart);
-            if (!result)
-                return BadRequest("No se pudo crear el carrito.");
+            try
+            {
+                bool validUser = await _authenticationRepository.ExistsAsync(cart.UserId);
+                if (!validUser) return NotFound("Usuario no registrado.");
 
-            return CreatedAtAction(nameof(GetById), new { id = cart.Id }, cart);
+                cart.Id = Guid.NewGuid();
+                cart.CreatedAt = DateTime.UtcNow;
+
+                await _shoppingcartRepository.AddCartAsync(cart);
+
+                return CreatedAtAction(nameof(GetCartById), new { id = cart.Id }, new { CartId = cart.Id });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Error interno del servidor");
+            }
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(Guid id, [FromBody] Shoppingcart cart)
+        public async Task<IActionResult> UpdateCart(Guid id, [FromBody] Shoppingcart cart)
         {
             if (id != cart.Id)
                 return BadRequest("El ID no coincide con el carrito enviado.");
 
-            var exists = await _shoppingcartRepository.ExistsAsync(id);
-            if (!exists)
-                return NotFound($"No existe un carrito con el ID: {id}.");
+            try
+            {
+                var exists = await _shoppingcartRepository.ExistsAsync(id);
+                if (!exists)
+                    return NotFound("El carrito no existe.");
 
-            var result = await _shoppingcartRepository.UpdateAsync(cart);
-            if (!result)
-                return BadRequest("Error al actualizar el carrito.");
-
-            return NoContent();
+                await _shoppingcartRepository.UpdateCartAsync(cart);
+                return NoContent();
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Error interno del servidor");
+            }
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id)
+        public async Task<IActionResult> DeleteCart(Guid id)
         {
-            var result = await _shoppingcartRepository.DeleteAsync(id);
-            if (!result)
-                return NotFound($"No se encontró ningún carrito con el ID: {id} para eliminar.");
-
-            return NoContent();
+            try
+            {
+                bool deleted = await _shoppingcartRepository.DeleteCartAsync(id);
+                if (!deleted) return NotFound("Carrito no encontrado para eliminar.");
+                return Ok();
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Error interno del servidor");
+            }
         }
     }
 }

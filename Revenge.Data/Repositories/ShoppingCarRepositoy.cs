@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Revenge.Core.Models;
 using Revenge.Data.Context;
 using Revenge.Infrestructure.Entities;
 using Revenge.Infrestructure.Repositories;
@@ -14,52 +15,57 @@ namespace Revenge.Data.Repositories
             _context = context;
         }
 
-        public async Task<Shoppingcart[]?> GetAllAsync(CancellationToken cancellationToken = default)
+        public async Task<ShoppingCartDTO[]> FindCartsByUserAsync(Guid userId, CancellationToken cancellationToken = default)
         {
             return await _context.Shoppingcarts
-                .Include(c => c.Cartitems)
-                .Include(c => c.User)
+                .AsNoTracking()
+                .Where(c => c.UserId == userId)
+                .Select(c => new ShoppingCartDTO
+                {
+                    Id = c.Id,
+                    UserId = c.UserId,
+                    CreatedAt = c.CreatedAt,
+                    UpdatedAt = c.UpdatedAt
+                })
                 .ToArrayAsync(cancellationToken);
         }
 
-        public async Task<Shoppingcart?> GetByIdAsync(Guid cartId, CancellationToken cancellationToken = default)
+        public async Task<ShoppingCartDTO?> FindCartByIdAsync(Guid cartId, CancellationToken cancellationToken = default)
         {
             return await _context.Shoppingcarts
-                .Include(c => c.Cartitems)
-                .Include(c => c.User)
-                .FirstOrDefaultAsync(c => c.Id == cartId, cancellationToken);
+                .AsNoTracking()
+                .Where(c => c.Id == cartId)
+                .Select(c => new ShoppingCartDTO
+                {
+                    Id = c.Id,
+                    UserId = c.UserId,
+                    CreatedAt = c.CreatedAt,
+                    UpdatedAt = c.UpdatedAt
+                })
+                .FirstOrDefaultAsync(cancellationToken);
         }
 
-        public async Task<Shoppingcart?> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
+        public async Task<bool> AddCartAsync(Shoppingcart newCart, CancellationToken cancellationToken = default)
         {
-            return await _context.Shoppingcarts
-                .Include(c => c.Cartitems)
-                .Include(c => c.User)
-                .FirstOrDefaultAsync(c => c.UserId == userId, cancellationToken);
-        }
-
-        public async Task<bool> AddAsync(Shoppingcart cart, CancellationToken cancellationToken = default)
-        {
-            await _context.Shoppingcarts.AddAsync(cart, cancellationToken);
+            await _context.Shoppingcarts.AddAsync(newCart, cancellationToken);
             return await _context.SaveChangesAsync(cancellationToken) > 0;
         }
 
-        public async Task<bool> UpdateAsync(Shoppingcart cart, CancellationToken cancellationToken = default)
+        public async Task<bool> UpdateCartAsync(Shoppingcart updatedCart, CancellationToken cancellationToken = default)
         {
-            var exists = await _context.Shoppingcarts.AnyAsync(c => c.Id == cart.Id, cancellationToken);
+            var exists = await _context.Shoppingcarts.AnyAsync(c => c.Id == updatedCart.Id, cancellationToken);
             if (!exists) return false;
 
-            cart.UpdatedAt = DateTime.UtcNow;
-            _context.Shoppingcarts.Update(cart);
+            updatedCart.UpdatedAt = DateTime.UtcNow;
+            _context.Shoppingcarts.Update(updatedCart);
             return await _context.SaveChangesAsync(cancellationToken) > 0;
         }
 
-        public async Task<bool> DeleteAsync(Guid cartId, CancellationToken cancellationToken = default)
+        public async Task<bool> DeleteCartAsync(Guid cartId, CancellationToken cancellationToken = default)
         {
-            var cart = await _context.Shoppingcarts.FindAsync(new object[] { cartId }, cancellationToken);
-            if (cart == null) return false;
-
-            _context.Shoppingcarts.Remove(cart);
+            var cart = new Shoppingcart { Id = cartId };
+            _context.Attach(cart);
+            _context.Remove(cart);
             return await _context.SaveChangesAsync(cancellationToken) > 0;
         }
 

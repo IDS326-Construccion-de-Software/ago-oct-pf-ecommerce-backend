@@ -1,13 +1,13 @@
-﻿using Revenge.Data.Context;
+﻿using Microsoft.EntityFrameworkCore;
+using Revenge.Core.Models;
+using Revenge.Data.Context;
 using Revenge.Infrestructure.Entities;
 using Revenge.Infrestructure.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-
 
 namespace Revenge.Data.Repositories
 {
@@ -20,50 +20,86 @@ namespace Revenge.Data.Repositories
             _context = context;
         }
 
-        public async Task<Category[]?> GetAllAsync(CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<CategoryDTO>> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            return await _context.Categories.ToArrayAsync(cancellationToken);
+            var categories = await _context.Categories
+                .AsNoTracking()
+                .ToListAsync(cancellationToken);
+
+            return categories.Select(c => new CategoryDTO
+            {
+                Id = c.Id,
+                Name = c.Name,
+                Description = c.Description
+            });
         }
 
-        public async Task<Category?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+        public async Task<CategoryDTO?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            return await _context.Categories.FindAsync(new object[] { id }, cancellationToken);
+            var category = await _context.Categories
+                .AsNoTracking()
+                .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
+
+            return category == null ? null : new CategoryDTO
+            {
+                Id = category.Id,
+                Name = category.Name,
+                Description = category.Description
+            };
         }
 
-        public async Task<Category?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
+        public async Task<CategoryDTO?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
         {
-            return await _context.Categories
+            var category = await _context.Categories
+                .AsNoTracking()
                 .FirstOrDefaultAsync(c => c.Name.ToLower() == name.ToLower(), cancellationToken);
+
+            return category == null ? null : new CategoryDTO
+            {
+                Id = category.Id,
+                Name = category.Name,
+                Description = category.Description
+            };
         }
 
-        public async Task<bool> AddAsync(Category newCategory, CancellationToken cancellationToken = default)
+        public async Task<bool> AddAsync(CategoryDTO dto, CancellationToken cancellationToken = default)
         {
-            await _context.Categories.AddAsync(newCategory, cancellationToken);
+            var entity = new Category
+            {
+                Id = dto.Id != Guid.Empty ? dto.Id : Guid.NewGuid(),
+                Name = dto.Name,
+                Description = dto.Description
+            };
+
+            await _context.Categories.AddAsync(entity, cancellationToken);
             return await _context.SaveChangesAsync(cancellationToken) > 0;
         }
 
-        public async Task<bool> UpdateAsync(Category category, CancellationToken cancellationToken = default)
+        public async Task<bool> UpdateAsync(CategoryDTO dto, CancellationToken cancellationToken = default)
         {
-            var exists = await _context.Categories.AnyAsync(c => c.Id == category.Id, cancellationToken);
+            var exists = await _context.Categories.AnyAsync(c => c.Id == dto.Id, cancellationToken);
             if (!exists) return false;
 
-            category.UpdatedAt = DateTime.UtcNow;
-            _context.Categories.Update(category);
+            var entity = await _context.Categories.FirstAsync(c => c.Id == dto.Id, cancellationToken);
+            entity.Name = dto.Name;
+            entity.Description = dto.Description;
+
+            _context.Categories.Update(entity);
             return await _context.SaveChangesAsync(cancellationToken) > 0;
         }
 
-        public async Task<bool> DeleteAsync(Guid categoryId, CancellationToken cancellationToken = default)
+        public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var category = await _context.Categories.FindAsync(new object[] { categoryId }, cancellationToken);
+            var category = await _context.Categories.FindAsync(new object[] { id }, cancellationToken);
             if (category == null) return false;
 
             _context.Categories.Remove(category);
             return await _context.SaveChangesAsync(cancellationToken) > 0;
         }
 
-        public async Task<bool> ExistsAsync(Guid categoryId, CancellationToken cancellationToken = default)
+        public async Task<bool> ExistsAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            return await _context.Categories.AnyAsync(c => c.Id == categoryId, cancellationToken);
+            return await _context.Categories.AnyAsync(c => c.Id == id, cancellationToken);
         }
     }
 }

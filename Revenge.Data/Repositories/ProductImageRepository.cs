@@ -1,11 +1,12 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using Revenge.Core.Models;
+using Revenge.Data.Context;
+using Revenge.Infrestructure.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Revenge.Data.Context;
-using Revenge.Infrestructure.Entities;
 
 namespace Revenge.Infrestructure.Repositories
 {
@@ -18,56 +19,92 @@ namespace Revenge.Infrestructure.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<Productimage>> GetAllAsync(CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<ProductImageDTO>> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            return await _context.Productimages
-                .Include(p => p.Product)
+            var entities = await _context.Productimages
+                .AsNoTracking()
                 .ToListAsync(cancellationToken);
+
+            return entities.Select(e => new ProductImageDTO
+            {
+                Id = e.Id,
+                ProductId = e.ProductId,
+                Url = e.Url,
+                IsPrimary = e.IsPrimary,
+                Order = e.Order
+            });
         }
 
-        public async Task<Productimage?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+        public async Task<ProductImageDTO?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            return await _context.Productimages.FindAsync(new object[] { id }, cancellationToken);
+            var entity = await _context.Productimages
+                .AsNoTracking()
+                .FirstOrDefaultAsync(e => e.Id == id, cancellationToken);
+
+            return entity == null ? null : new ProductImageDTO
+            {
+                Id = entity.Id,
+                ProductId = entity.ProductId,
+                Url = entity.Url,
+                IsPrimary = entity.IsPrimary,
+                Order = entity.Order
+            };
         }
 
-        public async Task<Productimage?> GetPrimaryByProductIdAsync(Guid productId, CancellationToken cancellationToken = default)
+        public async Task<ProductImageDTO?> GetPrimaryByProductIdAsync(Guid productId, CancellationToken cancellationToken = default)
         {
-            return await _context.Productimages
-                .FirstOrDefaultAsync(p => p.ProductId == productId && p.IsPrimary, cancellationToken);
+            var entity = await _context.Productimages
+                .AsNoTracking()
+                .FirstOrDefaultAsync(e => e.ProductId == productId && e.IsPrimary, cancellationToken);
+
+            return entity == null ? null : new ProductImageDTO
+            {
+                Id = entity.Id,
+                ProductId = entity.ProductId,
+                Url = entity.Url,
+                IsPrimary = entity.IsPrimary,
+                Order = entity.Order
+            };
         }
 
-        public async Task<Productimage> AddAsync(Productimage image, CancellationToken cancellationToken = default)
+        public async Task<ProductImageDTO> AddAsync(ProductImageDTO dto, CancellationToken cancellationToken = default)
         {
-            // Verifica que el producto exista
-            var productExists = await _context.Products.AnyAsync(p => p.Id == image.ProductId, cancellationToken);
+            var productExists = await _context.Products.AnyAsync(p => p.Id == dto.ProductId, cancellationToken);
             if (!productExists)
                 throw new ArgumentException("El producto especificado no existe.");
 
-            // Si la imagen es principal, desmarcar otras
-            if (image.IsPrimary)
+            if (dto.IsPrimary)
             {
                 var existingPrimary = await _context.Productimages
-                    .Where(pi => pi.ProductId == image.ProductId && pi.IsPrimary)
+                    .Where(pi => pi.ProductId == dto.ProductId && pi.IsPrimary)
                     .ToListAsync(cancellationToken);
 
                 foreach (var img in existingPrimary)
-                {
                     img.IsPrimary = false;
-                }
             }
 
-            _context.Productimages.Add(image);
+            var entity = new Productimage
+            {
+                Id = dto.Id != Guid.Empty ? dto.Id : Guid.NewGuid(),
+                ProductId = dto.ProductId,
+                Url = dto.Url,
+                IsPrimary = dto.IsPrimary,
+                Order = dto.Order
+            };
+
+            _context.Productimages.Add(entity);
             await _context.SaveChangesAsync(cancellationToken);
-            return image;
+
+            return dto;
         }
 
         public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var image = await _context.Productimages.FindAsync(new object[] { id }, cancellationToken);
-            if (image == null)
+            var entity = await _context.Productimages.FindAsync(new object[] { id }, cancellationToken);
+            if (entity == null)
                 return false;
 
-            _context.Productimages.Remove(image);
+            _context.Productimages.Remove(entity);
             await _context.SaveChangesAsync(cancellationToken);
             return true;
         }
