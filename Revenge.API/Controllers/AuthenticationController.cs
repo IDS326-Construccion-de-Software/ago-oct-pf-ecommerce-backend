@@ -67,7 +67,7 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
                 {
                     await _authenticationRepository.AddUserAsync(new Infrestructure.Entities.User
                     {
-                        Id = new Guid(),
+                        Id = Guid.NewGuid(),
                         Email = registerUserDTO.Email,
                         Name = registerUserDTO.Name,
                         Cellphone = registerUserDTO.Cellphone,
