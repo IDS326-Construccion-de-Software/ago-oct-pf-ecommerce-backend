@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Revenge.Core.Models;
 using Revenge.Infrestructure.Entities;
 using Revenge.Infrestructure.Repositories;
 using System;
@@ -50,7 +51,7 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Create([FromBody] Cartitem item)
+        public async Task<ActionResult> Create([FromBody] CartItemDTO item)
         {
             item.Id = Guid.NewGuid();
             item.AddedAt = DateTime.UtcNow;
@@ -63,7 +64,7 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(Guid id, [FromBody] Cartitem item)
+        public async Task<IActionResult> Update(Guid id, [FromBody] CartItemDTO item)
         {
             if (id != item.Id)
                 return BadRequest("El ID no coincide con el ítem enviado.");

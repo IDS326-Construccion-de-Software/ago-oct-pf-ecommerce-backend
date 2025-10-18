@@ -6,8 +6,4 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Revenge.Core2\Revenge.Core2.csproj" />
-  </ItemGroup>
-
 </Project>
