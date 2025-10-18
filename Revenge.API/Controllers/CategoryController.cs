@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Revenge.Core.Models;
-using Revenge.Infrestructure.Entities;
 using Revenge.Infrestructure.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
@@ -21,9 +21,9 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CategoryDTO>>> GetCategories()
+        public async Task<ActionResult<IEnumerable<CategoryDTO>>> GetCategories(CancellationToken cancellationToken)
         {
-            var categories = await _categoryRepository.GetAllAsync();
+            var categories = await _categoryRepository.GetAllAsync(cancellationToken);
             if (categories == null || !categories.Any())
                 return NotFound("No se encontraron categorías registradas.");
 
@@ -31,9 +31,9 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<CategoryDTO>> GetCategory(Guid id)
+        public async Task<ActionResult<CategoryDTO>> GetCategory(Guid id, CancellationToken cancellationToken)
         {
-            var category = await _categoryRepository.GetByIdAsync(id);
+            var category = await _categoryRepository.GetByIdAsync(id, cancellationToken);
             if (category == null)
                 return NotFound($"No se encontró ninguna categoría con el ID: {id}.");
 
@@ -41,12 +41,11 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<CategoryDTO>> PostCategory(CategoryDTO category)
+        public async Task<ActionResult<CategoryDTO>> PostCategory(CategoryDTO category, CancellationToken cancellationToken)
         {
             category.Id = Guid.NewGuid();
-            //category.CreatedAt = DateTime.UtcNow;
+            var success = await _categoryRepository.AddAsync(category, cancellationToken);
 
-            var success = await _categoryRepository.AddAsync(category);
             if (!success)
                 return BadRequest("No se pudo crear la categoría.");
 
@@ -54,16 +53,16 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCategory(Guid id, CategoryDTO category)
+        public async Task<IActionResult> PutCategory(Guid id, CategoryDTO category, CancellationToken cancellationToken)
         {
             if (id != category.Id)
                 return BadRequest("El ID no coincide con la categoría enviada.");
 
-            var exists = await _categoryRepository.ExistsAsync(id);
+            var exists = await _categoryRepository.ExistsAsync(id, cancellationToken);
             if (!exists)
                 return NotFound($"No existe una categoría con el ID: {id}.");
 
-            var success = await _categoryRepository.UpdateAsync(category);
+            var success = await _categoryRepository.UpdateAsync(category, cancellationToken);
             if (!success)
                 return BadRequest("Error al actualizar la categoría.");
 
@@ -71,9 +70,9 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCategory(Guid id)
+        public async Task<IActionResult> DeleteCategory(Guid id, CancellationToken cancellationToken)
         {
-            var success = await _categoryRepository.DeleteAsync(id);
+            var success = await _categoryRepository.DeleteAsync(id, cancellationToken);
             if (!success)
                 return NotFound($"No se encontró ninguna categoría con el ID: {id} para eliminar.");
 

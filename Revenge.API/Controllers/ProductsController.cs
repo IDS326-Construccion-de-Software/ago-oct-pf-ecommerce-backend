@@ -1,10 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Revenge.Data.Context;
+using Revenge.Core.Models;
 using Revenge.Infrestructure.Entities;
 using Revenge.Infrestructure.Repositories;
 
@@ -12,70 +7,114 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
 {
     [Route("api/product")]
     [ApiController]
-    public class ProductsController : ControllerBase
+    public class ProductController : ControllerBase
     {
         private readonly IProductRepository _productRepository;
+        private readonly ICategoryRepository _categoryRepository;
 
-        public ProductsController(IProductRepository productRepository)
+        public ProductController(
+            IProductRepository productRepository,
+            ICategoryRepository categoryRepository)
         {
             _productRepository = productRepository;
+            _categoryRepository = categoryRepository;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Product>>> GetProducts(CancellationToken cancellationToken)
+        public async Task<ActionResult<ProductDTO[]>> GetAll(CancellationToken cancellationToken)
         {
-            var products = await _productRepository.GetAllAsync(cancellationToken);
-            if (products == null || products.Length == 0)
-                return NotFound("No se encontraron productos registrados.");
+            try
+            {
+                var products = await _productRepository.FindAllAsync(cancellationToken);
+                if (products.Length == 0)
+                    return NotFound("No se encontraron productos registrados.");
 
-            return Ok(products);
+                return Ok(products);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Error interno del servidor");
+            }
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Product>> GetProduct(Guid id, CancellationToken cancellationToken)
+        public async Task<ActionResult<ProductDTO>> GetById(Guid id, CancellationToken cancellationToken)
         {
-            var product = await _productRepository.GetByIdAsync(id, cancellationToken);
-            if (product == null)
-                return NotFound($"No se encontró ningún producto con el ID: {id}.");
+            try
+            {
+                var product = await _productRepository.FindByIdAsync(id, cancellationToken);
+                if (product == null)
+                    return NotFound($"No se encontró ningún producto con el ID: {id}.");
 
-            return Ok(product);
+                return Ok(product);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Error interno del servidor");
+            }
         }
 
         [HttpPost]
-        public async Task<ActionResult> PostProduct(Product product, CancellationToken cancellationToken)
+        public async Task<IActionResult> AddProduct([FromBody] Product newProduct, CancellationToken cancellationToken)
         {
-            var result = await _productRepository.AddAsync(product, cancellationToken);
-            if (!result)
-                return BadRequest("No se pudo crear el producto.");
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            return CreatedAtAction(nameof(GetProduct), new { id = product.Id }, product);
+            try
+            {
+                var categoryExists = await _categoryRepository.ExistsAsync(newProduct.CategoryId, cancellationToken);
+                if (!categoryExists)
+                    return NotFound("La categoría asociada no existe.");
+
+                newProduct.Id = Guid.NewGuid();
+                newProduct.CreatedAt = DateTime.UtcNow;
+
+                await _productRepository.AddAsync(newProduct, cancellationToken);
+
+                return CreatedAtAction(nameof(GetById), new { id = newProduct.Id }, newProduct);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Error interno del servidor");
+            }
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutProduct(Guid id, Product product, CancellationToken cancellationToken)
+        public async Task<IActionResult> UpdateProduct(Guid id, [FromBody] Product updatedProduct, CancellationToken cancellationToken)
         {
-            if (id != product.Id)
+            if (id != updatedProduct.Id)
                 return BadRequest("El ID no coincide con el producto enviado.");
 
-            var exists = await _productRepository.ExistsAsync(id, cancellationToken);
-            if (!exists)
-                return NotFound($"No existe un producto con el ID: {id}.");
+            try
+            {
+                var exists = await _productRepository.ExistsAsync(id, cancellationToken);
+                if (!exists)
+                    return NotFound("El producto no existe.");
 
-            var updated = await _productRepository.UpdateAsync(product, cancellationToken);
-            if (!updated)
-                return BadRequest("Error al actualizar el producto.");
-
-            return NoContent();
+                await _productRepository.UpdateAsync(updatedProduct, cancellationToken);
+                return NoContent();
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Error interno del servidor");
+            }
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduct(Guid id, CancellationToken cancellationToken)
         {
-            var deleted = await _productRepository.DeleteAsync(id, cancellationToken);
-            if (!deleted)
-                return NotFound($"No se encontró ningún producto con el ID: {id} para eliminar.");
+            try
+            {
+                var deleted = await _productRepository.DeleteAsync(id, cancellationToken);
+                if (!deleted)
+                    return NotFound("No se encontró ningún producto con el ID indicado para eliminar.");
 
-            return NoContent();
+                return Ok();
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Error interno del servidor");
+            }
         }
     }
 }

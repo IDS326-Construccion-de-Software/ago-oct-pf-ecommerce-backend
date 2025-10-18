@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Revenge.Infrestructure.Entities;
+using Revenge.Core.Models;
 using Revenge.Infrestructure.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
@@ -20,9 +21,9 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Productimage>>> GetProductImages()
+        public async Task<ActionResult<IEnumerable<ProductImageDTO>>> GetProductImages(CancellationToken cancellationToken)
         {
-            var images = await _repository.GetAllAsync();
+            var images = await _repository.GetAllAsync(cancellationToken);
             if (images == null || !images.Any())
                 return NotFound("No se encontraron imágenes registradas.");
 
@@ -30,9 +31,9 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Productimage>> GetProductImageById(Guid id)
+        public async Task<ActionResult<ProductImageDTO>> GetProductImageById(Guid id, CancellationToken cancellationToken)
         {
-            var image = await _repository.GetByIdAsync(id);
+            var image = await _repository.GetByIdAsync(id, cancellationToken);
             if (image == null)
                 return NotFound($"No se encontró ninguna imagen con el ID: {id}.");
 
@@ -40,9 +41,9 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
         }
 
         [HttpGet("primary/{productId}")]
-        public async Task<ActionResult<Productimage>> GetPrimaryImage(Guid productId)
+        public async Task<ActionResult<ProductImageDTO>> GetPrimaryImage(Guid productId, CancellationToken cancellationToken)
         {
-            var primaryImage = await _repository.GetPrimaryByProductIdAsync(productId);
+            var primaryImage = await _repository.GetPrimaryByProductIdAsync(productId, cancellationToken);
             if (primaryImage == null)
                 return NotFound("El producto no tiene una imagen principal.");
 
@@ -50,14 +51,11 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Productimage>> PostProductImage(Productimage image)
+        public async Task<ActionResult<ProductImageDTO>> PostProductImage(ProductImageDTO image, CancellationToken cancellationToken)
         {
             try
             {
-                var created = await _repository.AddAsync(image);
-                if (created == null)
-                    return BadRequest("No se pudo crear la imagen del producto.");
-
+                var created = await _repository.AddAsync(image, cancellationToken);
                 return CreatedAtAction(nameof(GetProductImageById), new { id = created.Id }, created);
             }
             catch (ArgumentException ex)
@@ -67,9 +65,9 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteProductImage(Guid id)
+        public async Task<IActionResult> DeleteProductImage(Guid id, CancellationToken cancellationToken)
         {
-            var deleted = await _repository.DeleteAsync(id);
+            var deleted = await _repository.DeleteAsync(id, cancellationToken);
             if (!deleted)
                 return NotFound($"No se encontró ninguna imagen con el ID: {id} para eliminar.");
 

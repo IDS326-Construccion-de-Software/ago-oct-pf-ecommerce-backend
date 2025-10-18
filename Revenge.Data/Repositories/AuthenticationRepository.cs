@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Revenge.Data.Context;
-using Revenge.Data.Models;
 using Revenge.Infrestructure.Entities;
 using Revenge.Infrestructure.Repositories;
 using System;

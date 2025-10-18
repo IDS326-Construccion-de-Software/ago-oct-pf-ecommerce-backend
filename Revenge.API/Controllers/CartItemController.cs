@@ -1,11 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Revenge.Core.Models;
-using Revenge.Infrestructure.Entities;
 using Revenge.Infrestructure.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
 {
@@ -21,17 +16,17 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Cartitem>>> GetAll()
+        public async Task<ActionResult<IEnumerable<CartItemDTO>>> GetAll()
         {
             var items = await _cartItemRepository.GetAllAsync();
-            if (items == null || !items.Any())
+            if (!items.Any())
                 return NotFound("No se encontraron ítems en el carrito.");
 
             return Ok(items);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Cartitem>> GetById(Guid id)
+        public async Task<ActionResult<CartItemDTO>> GetById(Guid id)
         {
             var item = await _cartItemRepository.GetByIdAsync(id);
             if (item == null)
@@ -41,10 +36,10 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
         }
 
         [HttpGet("cart/{cartId}")]
-        public async Task<ActionResult<IEnumerable<Cartitem>>> GetByCartId(Guid cartId)
+        public async Task<ActionResult<IEnumerable<CartItemDTO>>> GetByCartId(Guid cartId)
         {
             var items = await _cartItemRepository.GetByCartIdAsync(cartId);
-            if (items == null || !items.Any())
+            if (!items.Any())
                 return NotFound($"No se encontraron ítems asociados al carrito con ID: {cartId}.");
 
             return Ok(items);
@@ -54,8 +49,6 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
         public async Task<ActionResult> Create([FromBody] CartItemDTO item)
         {
             item.Id = Guid.NewGuid();
-            item.AddedAt = DateTime.UtcNow;
-
             var result = await _cartItemRepository.AddAsync(item);
             if (!result)
                 return BadRequest("No se pudo crear el ítem en el carrito.");
