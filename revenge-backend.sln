@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Revenge.API", "Revenge.API\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Revenge.Infrestructure", "Revenge.Infrestructure\Revenge.Infrestructure.csproj", "{E2EB7054-0619-B28A-1A2C-28B383642E93}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Revenge.Core2", "Revenge.Core2\Revenge.Core2.csproj", "{ACD8F162-384B-F2FE-3FBB-6980ECA2287F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{E2EB7054-0619-B28A-1A2C-28B383642E93}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E2EB7054-0619-B28A-1A2C-28B383642E93}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E2EB7054-0619-B28A-1A2C-28B383642E93}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ACD8F162-384B-F2FE-3FBB-6980ECA2287F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ACD8F162-384B-F2FE-3FBB-6980ECA2287F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ACD8F162-384B-F2FE-3FBB-6980ECA2287F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ACD8F162-384B-F2FE-3FBB-6980ECA2287F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
