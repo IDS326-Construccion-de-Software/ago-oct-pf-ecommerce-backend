@@ -21,7 +21,7 @@ builder.Services.AddCors(options =>
         policy =>
         {
             policy
-                .WithOrigins("http://localhost:5173", "https://localhost:5173")
+                .WithOrigins("https://clever-kataifi-6e5e01.netlify.app/", "https://localhost:5173")
                 .AllowAnyHeader()
                 .AllowAnyMethod()
                 .AllowCredentials();
