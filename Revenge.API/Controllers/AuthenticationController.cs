@@ -61,6 +61,21 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
                     }
                 };
                 var auth0User = await client.Users.CreateAsync(userRequest);
+
+                if (auth0User != null)
+                {
+                    await _authenticationRepository.AddUserAsync(new Infrestructure.Entities.User
+                    {
+                        Id = new Guid(),
+                        Email = registerUserDTO.Email,
+                        Name = registerUserDTO.Name,
+                        Cellphone = registerUserDTO.Cellphone,
+                        CreatedAt = DateTime.UtcNow,
+                        Password = auth0User.Identities[0].UserId.ToString(),
+
+                    }, cancellationToken);
+                }
+
                 return CreatedAtAction(
                     nameof(Register),
                     new { id = auth0User.UserId },
@@ -115,7 +130,6 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
             }
         }
 
-        // funcionamiento parcial
         [HttpPost("login")]
         public async Task<ActionResult> Login([FromBody] LoginUserDTO loginUserDTO, CancellationToken cancellationToken)
         {

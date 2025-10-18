@@ -46,8 +46,9 @@ namespace Revenge.Data.Repositories
                 return result > 0;
 
             }
-            catch
+            catch(Exception e)
             {
+                Console.WriteLine(e.Message);
                 return false;
             }
         }
