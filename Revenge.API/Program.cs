@@ -5,6 +5,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Revenge.Data.Context;
+using Revenge.Data.Repositories;
+using Revenge.Data.Services;
+using Revenge.Infrestructure.Repositories;
+using Revenge.Infrestructure.Services;
 using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +18,14 @@ var configuration = new ConfigurationBuilder()
     .Build();
 
 builder.Services.ConfigureConnection(configuration);
+
+// Payment Gateway Configuration
+builder.Services.AddHttpClient<IPaymentGatewayService, PaymentGatewayService>(client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["PaymentGateway:BaseUrl"] ?? "https://cctest.falcon.com.do/");
+    client.Timeout = TimeSpan.FromSeconds(30);
+});
+builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 
 builder.Services.AddCors(options =>
 {

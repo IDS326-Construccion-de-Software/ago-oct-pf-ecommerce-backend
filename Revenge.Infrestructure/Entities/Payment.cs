@@ -19,9 +19,29 @@ public partial class Payment
 
     public string? TransactionReference { get; set; }
 
+    /// <summary>
+    /// Código de autorización devuelto por el Payment Gateway.
+    /// </summary>
+    public string? AuthCode { get; set; }
+
+    /// <summary>
+    /// Código de respuesta del Payment Gateway ("00" = éxito).
+    /// </summary>
+    public string? ResponseCode { get; set; }
+
+    /// <summary>
+    /// Mensaje de error del Payment Gateway (si aplica).
+    /// </summary>
+    public string? GatewayErrorMessage { get; set; }
+
+    /// <summary>
+    /// Estado del pago: "pending", "completed", "failed".
+    /// </summary>
+    public string PaymentStatus { get; set; } = "pending";
+
     public DateTime? PaidAt { get; set; }
 
-    public DateTime? CreatedAt { get; set; }
+    public DateTime CreatedAt { get; set; }
 
     public DateTime? UpdatedAt { get; set; }
 
