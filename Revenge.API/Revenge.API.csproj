@@ -21,8 +21,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Revenge.Core2\Revenge.Core2.csproj" />
     <ProjectReference Include="..\Revenge.Data\Revenge.Data.csproj" />
-	<ProjectReference Include="..\Revenge.Infrestructure\Revenge.Infrestructure.csproj" />
+    <ProjectReference Include="..\Revenge.Infrestructure\Revenge.Infrestructure.csproj" />
   </ItemGroup>
 
 </Project>
