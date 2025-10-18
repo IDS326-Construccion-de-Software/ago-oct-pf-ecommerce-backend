@@ -1,4 +1,5 @@
 
+using Revenge.Core.Models;
 using Revenge.Infrestructure.Entities;
 
 
