@@ -1,6 +1,7 @@
 
 using Revenge.Infrestructure.Entities;
 
+
 namespace Revenge.Infrestructure.Repositories
 {
   public interface IInvoiceRepository
@@ -22,9 +23,9 @@ namespace Revenge.Infrestructure.Repositories
       Guid invoiceId,
       CancellationToken cancellationToken = default);
 
-      Task<bool> ExistsAsync(
-      Guid invoiceId,
-      CancellationToken cancellationToken = default);
+    Task<bool> ExistsAsync(
+    Guid invoiceId,
+    CancellationToken cancellationToken = default);
   }
 
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Revenge.Core.Models;
 using Revenge.Infrestructure.Entities;
 using Revenge.Infrestructure.Repositories;
 using System;
@@ -20,7 +21,7 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Category>>> GetCategories()
+        public async Task<ActionResult<IEnumerable<CategoryDTO>>> GetCategories()
         {
             var categories = await _categoryRepository.GetAllAsync();
             if (categories == null || !categories.Any())
@@ -30,7 +31,7 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Category>> GetCategory(Guid id)
+        public async Task<ActionResult<CategoryDTO>> GetCategory(Guid id)
         {
             var category = await _categoryRepository.GetByIdAsync(id);
             if (category == null)
@@ -40,10 +41,10 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Category>> PostCategory(Category category)
+        public async Task<ActionResult<CategoryDTO>> PostCategory(CategoryDTO category)
         {
             category.Id = Guid.NewGuid();
-            category.CreatedAt = DateTime.UtcNow;
+            //category.CreatedAt = DateTime.UtcNow;
 
             var success = await _categoryRepository.AddAsync(category);
             if (!success)
@@ -53,7 +54,7 @@ namespace Revenge.API_oct_pf_ecommerce_backend.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCategory(Guid id, Category category)
+        public async Task<IActionResult> PutCategory(Guid id, CategoryDTO category)
         {
             if (id != category.Id)
                 return BadRequest("El ID no coincide con la categoría enviada.");

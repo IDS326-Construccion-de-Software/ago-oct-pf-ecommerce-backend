@@ -1,4 +1,5 @@
-﻿using Revenge.Infrestructure.Entities;
+﻿using Revenge.Core.Models;
+using Revenge.Infrestructure.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,10 +10,10 @@ namespace Revenge.Infrestructure.Repositories
 {
     public interface IProductRepository
     {
-        Task<Product[]?> GetAllAsync(CancellationToken cancellationToken = default);
-        Task<Product?> GetByIdAsync(Guid productId, CancellationToken cancellationToken = default);
-        Task<bool> AddAsync(Product newProduct, CancellationToken cancellationToken = default);
-        Task<bool> UpdateAsync(Product product, CancellationToken cancellationToken = default);
+        Task<ProductDTO[]?> GetAllAsync(CancellationToken cancellationToken = default);
+        Task<ProductDTO?> GetByIdAsync(Guid productId, CancellationToken cancellationToken = default);
+        Task<bool> AddAsync(ProductDTO newProduct, CancellationToken cancellationToken = default);
+        Task<bool> UpdateAsync(ProductDTO product, CancellationToken cancellationToken = default);
         Task<bool> DeleteAsync(Guid productId, CancellationToken cancellationToken = default);
         Task<bool> ExistsAsync(Guid productId, CancellationToken cancellationToken = default);
 
