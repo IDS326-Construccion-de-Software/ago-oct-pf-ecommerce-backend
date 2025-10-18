@@ -14,13 +14,5 @@ namespace Revenge.Data.Models
         public decimal Price { get; set; }
         public Guid CategoryId { get; set; }
         public string Brand { get; set; } = null!;
-        public DateTime? CreatedAt { get; set; }
-        public DateTime? UpdatedAt { get; set; }
-
-        // Información básica de la categoría
-        public string? CategoryName { get; set; }
-
-        // Información básica de imágenes
-        public List<ProductImageDTO>? ProductImages { get; set; } 
     }
 }

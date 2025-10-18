@@ -14,9 +14,5 @@ namespace Revenge.Data.Models
         public int Quantity { get; set; }
         public DateTime? AddedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
-
-        // Información básica del producto
-        public string ProductName { get; set; } = null!;
-        public decimal ProductPrice { get; set; }
     }
 }

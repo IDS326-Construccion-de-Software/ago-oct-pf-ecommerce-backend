@@ -13,10 +13,5 @@ namespace Revenge.Data.Models
         public string Url { get; set; } = null!;
         public bool IsPrimary { get; set; }
         public int Order { get; set; }
-
-        // Información básica del producto
-        public string? ProductName { get; set; }
-        public decimal? ProductPrice { get; set; }
-        public string? ProductBrand { get; set; }
     }
 }
