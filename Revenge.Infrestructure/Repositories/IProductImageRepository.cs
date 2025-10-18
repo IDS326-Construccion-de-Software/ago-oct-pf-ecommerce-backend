@@ -8,10 +8,10 @@ namespace Revenge.Infrestructure.Repositories
 {
     public interface IProductImageRepository
     {
-        Task<IEnumerable<Productimage>> GetAllAsync(CancellationToken cancellationToken);
-        Task<Productimage?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
-        Task<Productimage?> GetPrimaryByProductIdAsync(Guid productId, CancellationToken cancellationToken);
-        Task<Productimage> AddAsync(Productimage image, CancellationToken cancellationToken);
-        Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken);
+        Task<IEnumerable<Productimage>> GetAllAsync(CancellationToken cancellationToken = default);
+        Task<Productimage?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+        Task<Productimage?> GetPrimaryByProductIdAsync(Guid productId, CancellationToken cancellationToken = default);
+        Task<Productimage> AddAsync(Productimage image, CancellationToken cancellationToken = default);
+        Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default);
     }
 }
