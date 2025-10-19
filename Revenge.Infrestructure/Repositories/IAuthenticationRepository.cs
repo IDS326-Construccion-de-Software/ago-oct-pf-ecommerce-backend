@@ -5,17 +5,13 @@ namespace Revenge.Infrestructure.Repositories
 {
     public interface IAuthenticationRepository
     {
-        //Task<User?> LoginAuth0(
-        //    string token,
-        //    CancellationToken cancellationToken = default);
-
-        Task<User?> LoginUserAsync(
+        Task<AuthLoginResult?> LoginUserAsync(
             string email,
             string plainPassword,
             CancellationToken cancellationToken = default);
 
         Task<bool> LogoutUserAsync(
-            string userId,
+            Guid userId,
             CancellationToken cancellationToken = default);
 
         Task<bool> AddUserAsync(
@@ -23,12 +19,12 @@ namespace Revenge.Infrestructure.Repositories
             CancellationToken cancellationToken = default);
 
         Task<bool> VerifyEmailAsync(
-            string userId,
+            Guid userId,
             string verificationCode,
             CancellationToken cancellationToken = default);
 
         Task<bool> ChangePasswordAsync(
-            string userId,
+            Guid userId,
             string currentPassword,
             string newPassword,
             CancellationToken cancellationToken = default);
@@ -38,9 +34,14 @@ namespace Revenge.Infrestructure.Repositories
             CancellationToken cancellationToken = default);
 
         Task<bool> ResetPasswordAsync(
-            string userId,
+            Guid userId,
             string resetToken,
             string newPassword,
             CancellationToken cancellationToken = default);
+
+        Task<bool> ExistsAsync(
+            Guid id,
+            CancellationToken cancellationToken = default
+        );
     }
 }

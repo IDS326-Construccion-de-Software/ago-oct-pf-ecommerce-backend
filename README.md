@@ -1,128 +1,175 @@
-# E-commerce Backend
+Proyecto E-Commerce Full Stack
 
-A modern e-commerce backend solution built with .NET 9.0, following layered architecture best practices. It includes API, data access, and infrastructure services.
+![Status](https://img.shields.io/badge/status-en%20desarrollo-yellow)
+![License](https://img.shields.io/badge/license-MIT-green)
+![Tech](https://img.shields.io/badge/stack-Full%20Stack-blue)
 
-## 🚀 Features
+Descripción
 
-- **RESTful API**: Well-structured REST endpoints for e-commerce operations
-- **OpenAPI/Swagger**: Comprehensive API documentation and testing interface
-- **Modern Architecture**: Clean separation of concerns with layered projects
-- **Development Ready**: Configured for both development and production environments
+Este proyecto es una plataforma E-Commerce desarrollada bajo un enfoque Full Stack, que permite la gestión de productos, usuarios, órdenes y autenticación segura.  
+El sistema está compuesto por un backend en .NET / C# con acceso a base de datos SQL Server y un frontend moderno implementado con React.js.
 
-## 🛠️ Tech Stack
-
-- **Framework**: ASP.NET Core 9.0
-- **Runtime**: .NET 9.0
-- **Documentation**: OpenAPI/Swagger
-- **License**: Apache License 2.0
-
-## 📋 Prerequisites
-
-Before running this solution, make sure you have the following installed:
-- [.NET 9.0 SDK](https://dotnet.microsoft.com/download/dotnet/9.0) or later
-- A code editor like [Visual Studio](https://visualstudio.microsoft.com/) or [VS Code](https://code.visualstudio.com/)
-
-## 🚀 Getting Started
-
-### Installation and Setup
-
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd ago-oct-pf-ecommerce-backend
-   ```
-
-2. **Restore dependencies**
-   ```bash
-   dotnet restore revenge-backend.sln
-   ```
-
-3. **Run the API**
-   ```bash
-   cd Revenge.API
-   dotnet run
-   ```
-
-The application will be available at:
-- **HTTP**: `http://localhost:5000`
-- **HTTPS**: `https://localhost:5001`
-
-When running in development mode, the OpenAPI/Swagger interface will be available at:
-- `https://localhost:5001/swagger`
-
-## 📖 API Documentation
-
-Interactive API documentation is available via Swagger in development. The main endpoints are focused on e-commerce operations (products, users, orders, etc).
-
-## ⚙️ Configuration
-
-### Application Settings
-
-The application uses two main configuration files:
-
-- `appsettings.json` - Base configuration
-- `appsettings.Development.json` - Development-specific overrides
-
-### Environment Variables
-
-You can override configuration values using environment variables following the ASP.NET Core configuration pattern.
-
-## 🏗️ Project Structure
-
-```
-revenge-backend.sln                # Main solution file
-Revenge.API/                       # Main API project
-├── Properties/                    # Launch settings
-├── Controllers/                   # API Controllers
-└── appsettings.json              # Configuration files
-Revenge.Data/                      # Data access layer
-├── Models/                        # Entities and data models
-└── Context/                       # Entity Framework context
-Revenge.Infrastructure/            # Business logic and services
-├── Services/                      # Service implementations
-└── Repositories/                  # Data repositories
-```
-
-## 🔧 Development
-
-### Building the Project
-```bash
-dotnet build revenge-backend.sln
-```
-
-### Running Tests
-```bash
-dotnet test revenge-backend.sln
-```
-
-### Publishing for Production
-```bash
-dotnet publish Revenge.API -c Release -o out
-```
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📄 License
-
-This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
-
-## 📞 Support
-
-If you encounter any issues or have questions:
-1. Check the existing [issues](../../issues)
-2. Create a new issue if your problem isn't already reported
-3. Provide detailed information about your environment and the issue
-
-## 🚦 Status
-
-![Build Status](https://github.com/IDS326-Construccion-de-Software/Revenge.APIoct-pf-ecommerce-backend/workflows/CI/badge.svg)
+El propósito principal es ofrecer una arquitectura limpia, escalable y segura, con autenticación JWT, validación de datos, control de roles y operaciones CRUD para las entidades principales del comercio electrónico.
 
 ---
 
-**Note**: This is an academic project developed as part of the Software Construction course (IDS326).
+Tecnologías Utilizadas
+
+Backend (.NET)
+- ASP.NET Core 7.0 / C#
+- Entity Framework Core
+- SQL Server (almacenamiento de datos)
+- log4net (registro de logs)
+- Swagger (documentación de la API)
+- JWT Authentication
+
+ Frontend (React)
+- React.js 18+
+- Vite o Create React App
+- Bootstrap / TailwindCSS
+- Axios (consumo de API)
+- HeroUI / NextUI
+
+ Otros
+- Git & GitHub (control de versiones)
+- Visual Studio / VSCode
+- Postman o Thunder Client (para pruebas de API)
+- .env para variables de entorno
+
+---
+
+  Estructura del Proyecto
+
+ proyecto-ecommerce/
+├── backend/                - API REST en .NET Core
+│   ├── Controllers/        - Controladores con endpoints
+│   ├── Models/             - Entidades y DTOs
+│   ├── Data/               - Contexto de base de datos
+│   ├── Repositories/       - Acceso a datos (Patrón Repository)
+│   ├── Services/           - Lógica de negocio
+│   ├── appsettings.json    - Configuración de entorno
+│   └── Program.cs          - Punto de entrada del backend
+│
+├── frontend/               - Aplicación React
+│   ├── src/
+│   │   ├── components/     - Componentes visuales
+│   │   ├── pages/          - Páginas (Home, Login, Productos, etc.)
+│   │   ├── services/       - Conexión con API
+│   │   └── App.jsx
+│   └── package.json        - Dependencias y scripts
+│
+└── README.md               - Archivo de documentación
+
+---
+
+ Requisitos Previos
+
+Antes de ejecutar el proyecto, asegúrate de tener instalados:
+
+-  .NET SDK 7.0 o superior  
+-  SQL Server y SQL Server Management Studio (SSMS)  
+-  Node.js v18+ y npm  
+-  Visual Studio 2022 o VSCode
+
+---
+
+ Instalación y Configuración
+
+ 1. Clonar el repositorio
+
+git clone https://github.com/tu-usuario/ago-oct-pf-ecommerce-backend-dev.git
+cd ago-oct-pf-ecommerce-backend-dev
+
+ 2. Configurar el Backend
+
+1. Abre la carpeta `backend` en Visual Studio.  
+2. Verifica que la cadena de conexión en `appsettings.json` apunte a tu servidor local:
+   ```json
+   "ConnectionStrings": {
+     "DefaultConnection": "Server=localhost;Database=EcommerceDB;User Id=sa;Password=tu_contraseña;"
+   }
+   ```
+3. Ejecuta las migraciones:
+   ```bash
+   dotnet ef database update
+   ```
+4. Inicia el backend:
+   ```bash
+   dotnet run
+   ```
+   El backend se ejecutará en:  
+   http://localhost:5000 o http://localhost:5041 (según configuración)
+
+ 3. Configurar el Frontend
+
+1. Entra a la carpeta `frontend`:
+   ```bash
+   cd frontend
+   ```
+2. Instala las dependencias:
+   ```bash
+   npm install
+   ```
+3. Crea un archivo `.env` con la URL del backend:
+   ```bash
+   VITE_API_URL=http://localhost:5000/api
+   ```
+4. Ejecuta el frontend:
+   ```bash
+   npm run dev
+   ```
+   Accede a la app en:  
+    http://localhost:5173
+
+---
+
+ Ejemplo de Uso
+
+1. Regístrate o inicia sesión con tus credenciales.  
+2. Navega al listado de productos.  
+3. Agrega ítems al carrito y realiza una compra simulada.  
+4. Si eres Administrador, puedes:
+   - Crear, editar y eliminar productos.
+   - Ver usuarios registrados.
+   - Consultar logs y auditorías.
+
+---
+
+ Guía para Contribuir
+
+1. Haz un fork del repositorio.  
+2. Crea una nueva rama:
+   ```bash
+   git checkout -b feature/nueva-funcionalidad
+   ```
+3. Realiza tus cambios y haz commit:
+   ```bash
+   git commit -m "Añadida nueva funcionalidad X"
+   ```
+4. Envía tu rama al repositorio:
+   ```bash
+   git push origin feature/nueva-funcionalidad
+   ```
+5. Abre un Pull Request en GitHub.
+
+---
+
+Autores
+
+Proyecto desarrollado por el Equipo de Desarrollo del Proyecto E-Commerce  
+Asignación: Módulo Backend – [Tu nombre aquí]  
+Colaboradores: Equipo Académico Ago-Oct
+
+---
+
+Licencia
+
+Este proyecto está bajo la licencia MIT.  
+Consulta el archivo [LICENSE](LICENSE) para más detalles.
+
+---
+
+Créditos y Reconocimientos
+
+Agradecimientos a los instructores y mentores del período académico Ago-Oct  
+por su orientación en el desarrollo de este proyecto Full Stack.

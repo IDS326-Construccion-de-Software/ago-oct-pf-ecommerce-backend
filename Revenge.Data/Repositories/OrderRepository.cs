@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Revenge.Core.Models;
 using Revenge.Data.Context;
 using Revenge.Infrestructure.Entities;
 using Revenge.Infrestructure.Repositories;
@@ -17,26 +18,37 @@ namespace Revenge.Data.Repositories
             _context = context;
         }
 
-        /// Obtiene todas las órdenes, incluyendo relaciones con User, Items, Pagos, Facturas
-        public async Task<Order[]?> GetAllAsync(CancellationToken cancellationToken = default)
+        public async Task<OrderDTO[]?> GetAllAsync(CancellationToken cancellationToken = default)
         {
             return await _context.Orders
-                .Include(o => o.User)
-                .Include(o => o.Orderitems)
-                .Include(o => o.Payments)
-                .Include(o => o.Invoices)
+                .AsNoTracking()
+                .Select(o => new OrderDTO
+                {
+                    Id = o.Id,
+                    UserId = o.UserId,
+                    CartId = o.AddressId ?? Guid.Empty, 
+                    OrderDate = o.PlacedAt,
+                    Status = null, 
+                    UpdatedAt = o.UpdatedAt
+                })
                 .ToArrayAsync(cancellationToken);
         }
 
-        /// Busca una orden por su ID con sus relaciones
-        public async Task<Order?> GetByIdAsync(Guid orderId, CancellationToken cancellationToken = default)
+        public async Task<OrderDTO?> GetByIdAsync(Guid orderId, CancellationToken cancellationToken = default)
         {
             return await _context.Orders
-                .Include(o => o.User)
-                .Include(o => o.Orderitems)
-                .Include(o => o.Payments)
-                .Include(o => o.Invoices)
-                .FirstOrDefaultAsync(o => o.Id == orderId, cancellationToken);
+                .AsNoTracking()
+                .Where(o => o.Id == orderId)
+                .Select(o => new OrderDTO
+                {
+                    Id = o.Id,
+                    UserId = o.UserId,
+                    CartId = o.AddressId ?? Guid.Empty,
+                    OrderDate = o.PlacedAt,
+                    Status = null,
+                    UpdatedAt = o.UpdatedAt
+                })
+                .FirstOrDefaultAsync(cancellationToken);
         }
 
         /// Agrega una nueva orden

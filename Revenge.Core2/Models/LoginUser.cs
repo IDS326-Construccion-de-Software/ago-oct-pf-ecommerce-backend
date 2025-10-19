@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 
-namespace Revenge.Data.Models
+namespace Revenge.Core.Models
 {
     public class LoginUserDTO
     {
