@@ -53,3 +53,8 @@ TestResult*/
 #CSharp 
 appsettings.json
 appsettings.*.json
+
+# IDE/REST client scratch files and user-specific project files
+*.http
+*.rest
+*.csproj.user
